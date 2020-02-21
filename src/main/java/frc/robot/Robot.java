@@ -6,15 +6,18 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
-
+import edu.wpi.first.wpilibj.Encoder;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
@@ -25,12 +28,16 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  * directory.
  */
 public class Robot extends TimedRobot {
-  SpeedControllerGroup leftMotors = new SpeedControllerGroup(new WPI_VictorSPX(3), new WPI_VictorSPX(4));
-  SpeedControllerGroup rightMotors = new SpeedControllerGroup(new WPI_VictorSPX(1), new WPI_VictorSPX(2));
+  
+  public DriveSubsystem driveSubsystem;
 
-  private final DifferentialDrive m_robotDrive
-      = new DifferentialDrive(leftMotors, rightMotors);
+  Victor armLift = new Victor(5);
+  Victor liftExtender = new Victor(6);
+  Victor intake = new Victor(7);
+  Victor liftRetracker = new Victor(8);
+  
   private final Joystick m_stick = new Joystick(0);
+  private final Joystick m_stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
 
   /**
@@ -39,6 +46,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    driveSubsystem = new DriveSubsystem();
   }
 
   /**
@@ -48,6 +56,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_timer.reset();
     m_timer.start();
+    driveSubsystem.resetEncoders();
   }
 
   /**
@@ -55,12 +64,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    // Drive for 2 seconds
-    if (m_timer.get() < 2.0) {
-      m_robotDrive.tankDrive(0.5, -0.5);//rotate clockwise
-    } else {
-      m_robotDrive.stopMotor(); // stop robot
+    while (driveSubsystem.leftEncoder.getDistance()<120) {
+      driveSubsystem.tankDrive(1, 1);  
+      updateTelemtry();
     }
+    driveSubsystem.tankDrive(0, 0); // stop robot
+    updateTelemtry();
+    
   }
 
   /**
@@ -73,11 +83,43 @@ public class Robot extends TimedRobot {
   /**
    * This function is called periodically during teleoperated mode.
    */
+
+  public static final int INTAKE_ARM_UP = 0; // TODO
+  public static final int INTAKE_ARM_DOWN = 0; // TODO 
+  public int intakeArmPosition = INTAKE_ARM_DOWN;
+  public boolean intakeButtonWasHeld = false;
+
   @Override
   public void teleopPeriodic() {
-    if (Math.abs(m_stick.getY())>.1||Math.abs(m_stick.getRawAxis(4))>.1){
-    m_robotDrive.arcadeDrive(-m_stick.getY(), m_stick.getRawAxis(4));//Setting the motors to half speed based off the joystick inputs
+    double rightTrigger1 = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
+    double leftTrigger1 = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
+    double rightTrigger2 = Utils.deadzone(m_stick2.getRawAxis(3), 0.1);
+    double leftTrigger2 = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
+    double yAxisLeftStick = Utils.deadzone(m_stick.getY(), 0.1);
+    double xAxisRightStick = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
+    boolean bButton = m_stick2.getRawButton(2);
+
+    driveSubsystem.arcadeDrive(yAxisLeftStick, xAxisRightStick);//Setting the motors to half speed based off the joystick inputs
+    //m_robotDrive.tankDrive(-m_stick.getY()*.5, -m_stick.getRawAxis(5)*.5);
+
+    liftExtender.set(rightTrigger1);
+    liftRetracker.set(leftTrigger1);
+
+    intake.setSpeed(rightTrigger2);
+
+    if (bButton && !intakeButtonWasHeld) {
+      if (intakeArmPosition == INTAKE_ARM_UP) {
+        armLift.setPosition(INTAKE_ARM_DOWN);
+        intakeArmPosition = INTAKE_ARM_DOWN;
+      } else {
+        armLift.setPosition(INTAKE_ARM_UP);
+        intakeArmPosition = INTAKE_ARM_UP;
+      }
     }
+
+    intakeButtonWasHeld = bButton;
+
+    updateTelemtry();
   }
 
   /**
@@ -86,4 +128,16 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
+
+  /** 
+   * Start work of telemtry
+   * */
+   public void telemtry(){
+   }
+   //Updating the telemtry
+   public void updateTelemtry(){
+     SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.rightEncoder.getDistance());
+     SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.leftEncoder.getDistance());
+   }
 }
