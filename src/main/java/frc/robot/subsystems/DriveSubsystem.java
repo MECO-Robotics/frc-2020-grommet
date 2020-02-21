@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import frc.robot.Map;
 
 public class DriveSubsystem {
 
@@ -14,14 +15,16 @@ public class DriveSubsystem {
     double distancePerRev = diameter * Math.PI;
 
     public DriveSubsystem() {
-        leftMotors = new SpeedControllerGroup(new WPI_VictorSPX(3), new WPI_VictorSPX(4));
-        rightMotors = new SpeedControllerGroup(new WPI_VictorSPX(1), new WPI_VictorSPX(2));
+        leftMotors = new SpeedControllerGroup(new WPI_VictorSPX(Map.LEFT_DRIVE_1), 
+                                            new WPI_VictorSPX(Map.LEFT_DRIVE_2));
 
-        leftMotors.setInverted(true);
-       
+        rightMotors = new SpeedControllerGroup(new WPI_VictorSPX(Map.RIGHT_DRIVE_1), 
+                                            new WPI_VictorSPX(Map.RIGHT_DRIVE_2));
 
-        leftEncoder = new Encoder(3,4);
-        rightEncoder = new Encoder(1,2);
+        leftMotors.setInverted(true);       
+
+        leftEncoder = new Encoder(Map.LEFT_ENCODER_1, Map.LEFT_ENCODER_2);
+        rightEncoder = new Encoder(Map.RIGHT_ENCODER_1, Map.RIGHT_ENCODER_2);
         leftEncoder.setDistancePerPulse(distancePerRev / ticksPerRev);
         rightEncoder.setDistancePerPulse(distancePerRev / ticksPerRev);
     }

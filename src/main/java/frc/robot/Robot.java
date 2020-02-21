@@ -31,10 +31,10 @@ public class Robot extends TimedRobot {
   
   public DriveSubsystem driveSubsystem;
 
-  Victor armLift = new Victor(5);
-  Victor liftExtender = new Victor(6);
-  Victor intake = new Victor(7);
-  Victor liftRetracker = new Victor(8);
+  Victor armLift = new Victor(Map.ARM_LIFT);
+  Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
+  Victor intake = new Victor(Map.INTAKE);
+  Victor liftRetracker = new Victor(Map.LIFT_RETRACTER);
   
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_stick2 = new Joystick(1);
