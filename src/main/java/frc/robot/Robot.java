@@ -35,7 +35,9 @@ public class Robot extends TimedRobot {
   Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
   Victor intake = new Victor(Map.INTAKE);
   Victor liftRetracker = new Victor(Map.LIFT_RETRACTER);
+  DigitalInput topLimitSwitch, bottomLimitSwitch;
   
+
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
@@ -47,6 +49,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     driveSubsystem = new DriveSubsystem();
+    topLimitSwitch = new DigitalInput(1);
+    bottomLimitSwitch = new DigitalInput(2);
   }
 
   /**
@@ -106,6 +110,20 @@ public class Robot extends TimedRobot {
     liftRetracker.set(leftTrigger1);
 
     intake.setSpeed(rightTrigger2);
+    
+    if (bButton && bottomLimitSwitch){
+      while (!topLimitSwitch){
+        armLift.set(1);
+      }
+    }else if (bButton && topLimitSwitch){
+      while (!bottomLimitSwitch){
+        armlift.set(-1);
+      }
+    }else if (bButton && topLimitSwitch && bottomLimitSwitch){
+      while (!bottomLimitSwitch){
+        armlift.set(-1);
+      }
+    }
 
     if (bButton && !intakeButtonWasHeld) {
       if (intakeArmPosition == INTAKE_ARM_UP) {
