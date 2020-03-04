@@ -7,4 +7,10 @@ public class Utils {
             return 0;
         return value;
     }
+
+    public static double sign(double value) {
+        if (value >= 0)
+            return 1;
+        return -1;
+    }
 }

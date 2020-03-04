@@ -23,7 +23,7 @@ public class DriveSubsystem {
 
         leftMotors.setInverted(true);       
 
-        leftEncoder = new Encoder(Map.LEFT_ENCODER_1, Map.LEFT_ENCODER_2);
+        leftEncoder = new Encoder(Map.LEFT_ENCODER_1, Map.LEFT_ENCODER_2, true);
         rightEncoder = new Encoder(Map.RIGHT_ENCODER_1, Map.RIGHT_ENCODER_2);
         leftEncoder.setDistancePerPulse(distancePerRev / ticksPerRev);
         rightEncoder.setDistancePerPulse(distancePerRev / ticksPerRev);
@@ -44,5 +44,4 @@ public class DriveSubsystem {
         rightMotors.set(y + x);
 
     }
-
 }

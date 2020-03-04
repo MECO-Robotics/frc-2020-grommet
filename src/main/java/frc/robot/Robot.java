@@ -6,7 +6,11 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+
+import javax.lang.model.util.ElementScanner6;
+
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,22 +39,22 @@ public class Robot extends TimedRobot {
   Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
   Victor intake = new Victor(Map.INTAKE);
   Victor liftRetracker = new Victor(Map.LIFT_RETRACTER);
-  DigitalInput topLimitSwitch, bottomLimitSwitch;
-  
+  DigitalInput bottomLimitSwitch,topLimitSwitch;
 
   private final Joystick m_stick = new Joystick(0);
   private final Joystick m_stick2 = new Joystick(1);
   private final Timer m_timer = new Timer();
-
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
    */
   @Override
   public void robotInit() {
+    
     driveSubsystem = new DriveSubsystem();
-    topLimitSwitch = new DigitalInput(1);
-    bottomLimitSwitch = new DigitalInput(2);
+    armLift.setInverted(false);
+    bottomLimitSwitch = new DigitalInput(5);
+    topLimitSwitch = new DigitalInput(4); 
   }
 
   /**
@@ -68,11 +72,35 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    while (driveSubsystem.leftEncoder.getDistance()<120) {
-      driveSubsystem.tankDrive(1, 1);  
+    
+    
+    /*while (driveSubsystem.leftEncoder.getDistance()<32){
+      driveSubsystem.tankDrive(-.3, -.3);  
       updateTelemtry();
     }
-    driveSubsystem.tankDrive(0, 0); // stop robot
+    driveSubsystem.tankDrive(0, 0);
+    while (m_timer.get()<10 && 5<m_timer.get()){
+      intake.set(1);
+    }*/
+    while(bottomLimitSwitch.get()){
+      armLift.set(-.3);
+    }
+    armLift.set(0);
+    while (driveSubsystem.leftEncoder.getDistance()<32){
+      driveSubsystem.tankDrive(-.3, -.3);
+      intake.set(-1);  
+      updateTelemtry();
+    }
+    intake.set(0);
+    driveSubsystem.tankDrive(0, 0);
+    while (topLimitSwitch.get()){
+      armLift.set(.5);
+      m_timer.delay(1);
+    }
+
+    armLift.set(0);
+    driveSubsystem.tankDrive(0, 0);
+     // stop robot
     updateTelemtry();
     
   }
@@ -82,11 +110,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopInit() {
+    armLift.set(0);
+    intake.set(0);
   }
 
   /**
    * This function is called periodically during teleoperated mode.
    */
+
+   @Override
+   public void disabledPeriodic() {
+     //System.out.println("Left encoder: " + driveSubsystem.leftEncoder.getDistance());
+     //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
+   }
 
   public static final int INTAKE_ARM_UP = 0; // TODO
   public static final int INTAKE_ARM_DOWN = 0; // TODO 
@@ -101,43 +137,62 @@ public class Robot extends TimedRobot {
     double leftTrigger2 = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
     double yAxisLeftStick = Utils.deadzone(m_stick.getY(), 0.1);
     double xAxisRightStick = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
+    boolean aButton = m_stick2.getRawButton(1);
+    boolean yButton = m_stick2.getRawButton(4);
+    boolean select = m_stick.getRawButton(7);
+    boolean leftBumper = m_stick.getRawButton(5);
     boolean bButton = m_stick2.getRawButton(2);
-
-    driveSubsystem.arcadeDrive(yAxisLeftStick, xAxisRightStick);//Setting the motors to half speed based off the joystick inputs
-    //m_robotDrive.tankDrive(-m_stick.getY()*.5, -m_stick.getRawAxis(5)*.5);
-
+    double throttle = Math.pow(yAxisLeftStick, 2) * Utils.sign(yAxisLeftStick);
+    double turn = Math.pow(xAxisRightStick, 2) * Utils.sign(xAxisRightStick);
+    driveSubsystem.arcadeDrive(throttle, turn);
+    armLift.set(0);
     liftExtender.set(rightTrigger1);
     liftRetracker.set(leftTrigger1);
 
-    intake.setSpeed(rightTrigger2);
+    if (leftTrigger2 > 0)
+      intake.setSpeed(-leftTrigger2);
+    else if (rightTrigger2 > 0)
+      intake.setSpeed(rightTrigger2);
+    else
+      intake.setSpeed(0);
     
-    if (bButton && bottomLimitSwitch){
-      while (!topLimitSwitch){
+    final double armLiftPow = 0.5;
+ 
+    if (yButton && topLimitSwitch.get()) {
+      armLift.set(armLiftPow);
+    } else if (aButton && bottomLimitSwitch.get()) {
+      armLift.set(-armLiftPow);
+    } else if (bButton) {
+      armLift.set(.1);
+    } else {
+      armLift.set(0);
+    }
+    
+    if (leftBumper){
+      armLift.set(armLiftPow);
+    }
+    /*if (yButton && bottomLimitSwitch.get()){
+      while (!topLimitSwitch.get()){
         armLift.set(1);
       }
-    }else if (bButton && topLimitSwitch){
-      while (!bottomLimitSwitch){
-        armlift.set(-1);
+      armLift.set(0);
+    }else if (aButton && topLimitSwitch.get()){
+      while (!bottomLimitSwitch.get()){
+        armLift.set(-1);
       }
-    }else if (bButton && topLimitSwitch && bottomLimitSwitch){
-      while (!bottomLimitSwitch){
-        armlift.set(-1);
+      armLift.set(0);
+    }else if (aButton && topLimitSwitch.get() && bottomLimitSwitch.get()){
+      while (!bottomLimitSwitch.get()){
+        armLift.set(-1);
       }
-    }
-
-    if (bButton && !intakeButtonWasHeld) {
-      if (intakeArmPosition == INTAKE_ARM_UP) {
-        armLift.setPosition(INTAKE_ARM_DOWN);
-        intakeArmPosition = INTAKE_ARM_DOWN;
-      } else {
-        armLift.setPosition(INTAKE_ARM_UP);
-        intakeArmPosition = INTAKE_ARM_UP;
-      }
-    }
-
-    intakeButtonWasHeld = bButton;
-
+      armLift.set(0);
+    }else if (select){
+      armLift.set(0);
+    }*/
     updateTelemtry();
+    if (select){
+      armLift.set(0);
+    }
   }
 
   /**
@@ -157,5 +212,8 @@ public class Robot extends TimedRobot {
    public void updateTelemtry(){
      SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.rightEncoder.getDistance());
      SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.leftEncoder.getDistance());
+   }
+   public void lift(){
+
    }
 }
