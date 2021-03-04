@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -111,17 +112,17 @@ public class Robot extends TimedRobot {
 
     intake.setSpeed(rightTrigger2);
     
-    if (bButton && bottomLimitSwitch){
-      while (!topLimitSwitch){
+    if (bButton && bottomLimitSwitch.get()){
+      while (!topLimitSwitch.get()){
         armLift.set(1);
       }
-    }else if (bButton && topLimitSwitch){
-      while (!bottomLimitSwitch){
-        armlift.set(-1);
+    }else if (bButton && topLimitSwitch.get()){
+      while (!bottomLimitSwitch.get()){
+        armLift.set(-1);
       }
-    }else if (bButton && topLimitSwitch && bottomLimitSwitch){
-      while (!bottomLimitSwitch){
-        armlift.set(-1);
+    }else if (bButton && topLimitSwitch.get() && bottomLimitSwitch.get()){
+      while (!bottomLimitSwitch.get()){
+        armLift.set(-1);
       }
     }
 
