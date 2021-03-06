@@ -8,6 +8,13 @@ import frc.robot.Map;
 public class BallCollectionSubsystem {
 
     public BallCollectionSubsystem() {
+        
     }
 
+    public void foo(){
+
+    }
+    
+    
+    
 }
