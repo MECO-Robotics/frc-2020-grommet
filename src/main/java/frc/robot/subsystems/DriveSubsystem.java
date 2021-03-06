@@ -10,7 +10,7 @@ public class DriveSubsystem {
     SpeedControllerGroup leftMotors, rightMotors;
     public Encoder leftEncoder, rightEncoder;
 
-    int ticksPerRev = 360; // TODO: confirm this is right
+    int ticksPerRev = 360;
     double diameter = 6.0; // inches
     double distancePerRev = diameter * Math.PI;
 
@@ -42,6 +42,5 @@ public class DriveSubsystem {
     public void arcadeDrive(double y, double x) {
         leftMotors.set(y - x);
         rightMotors.set(y + x);
-
     }
 }

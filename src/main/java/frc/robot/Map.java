@@ -10,9 +10,8 @@ public class Map {
 
     // PWM Values
     public static final int ARM_LIFT = 0;
-    public static final int LIFT_EXTENDER = 6;
+    public static final int LIFT_EXTENDER = 2;
     public static final int INTAKE = 1;
-    public static final int LIFT_RETRACTER = 8;
 
     // DIO Values
     public static final int RIGHT_ENCODER_1 = 0;
