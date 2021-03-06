@@ -10,7 +10,7 @@ public class DriveSubsystem {
     SpeedControllerGroup leftMotors, rightMotors;
     public Encoder leftEncoder, rightEncoder;
 
-    int ticksPerRev = 360; // TODO: confirm this is right
+    int ticksPerRev = 360;
     double diameter = 6.0; // inches
     double distancePerRev = diameter * Math.PI;
 
@@ -23,7 +23,7 @@ public class DriveSubsystem {
 
         leftMotors.setInverted(true);       
 
-        leftEncoder = new Encoder(Map.LEFT_ENCODER_1, Map.LEFT_ENCODER_2);
+        leftEncoder = new Encoder(Map.LEFT_ENCODER_1, Map.LEFT_ENCODER_2, true);
         rightEncoder = new Encoder(Map.RIGHT_ENCODER_1, Map.RIGHT_ENCODER_2);
         leftEncoder.setDistancePerPulse(distancePerRev / ticksPerRev);
         rightEncoder.setDistancePerPulse(distancePerRev / ticksPerRev);
@@ -42,7 +42,5 @@ public class DriveSubsystem {
     public void arcadeDrive(double y, double x) {
         leftMotors.set(y - x);
         rightMotors.set(y + x);
-
     }
-
 }
