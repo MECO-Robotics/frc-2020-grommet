@@ -209,6 +209,9 @@ public class Robot extends TimedRobot {
   }
    
    public void intakeUp(){
+       
+       //armLift1-10
+            //chimkin
       armLift.set(.5);
       m_timer.delay(.7);
       armLift.set(0);

@@ -8,6 +8,8 @@ public class BallCollectionSubsystemTest {
     public void testFoo() {
         
         BallCollectionSubsystem collector = new BallCollectionSubsystem();
-        collector.foo();
+      double z=  collector.setchimkin(3.0, 4.0);
+        org.junit.Assert.assertEquals(25.0,z);
+
     }
 }

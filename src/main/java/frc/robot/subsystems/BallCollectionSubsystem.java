@@ -8,13 +8,17 @@ import frc.robot.Map;
 public class BallCollectionSubsystem {
 
     public BallCollectionSubsystem() {
-        
+ 
     }
-
-    public void foo(){
-
-    }
-    
+       public void setchimkin() {
+            
+            
+            
+            // set 1-10 
+            //if then 1-4 rais arm full speed
+            //if then 5-10 raise arm .5
+        }
     
     
 }
+
