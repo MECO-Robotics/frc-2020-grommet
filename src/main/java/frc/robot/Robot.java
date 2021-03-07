@@ -182,6 +182,13 @@ public class Robot extends TimedRobot {
     updateTelemtry();
   }
 
+    public void teleopPeriodicNew() {
+        
+    }
+    
+    
+    
+    
   /**
    * This function is called periodically during test mode.
    */
