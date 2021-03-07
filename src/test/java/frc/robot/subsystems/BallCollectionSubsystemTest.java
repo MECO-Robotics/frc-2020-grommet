@@ -8,8 +8,16 @@ public class BallCollectionSubsystemTest {
     public void testFoo() {
         
         BallCollectionSubsystem collector = new BallCollectionSubsystem();
-      double z=  collector.setchimkin(3.0, 4.0);
-        org.junit.Assert.assertEquals(5.0, z, 0.001);
+   
+        
+        
+        
+        double z=  collector.computeArmMotorSpeed(true, false);
+        org.junit.Assert.assertEquals(1.0, z, 0.001);
 
+        
+        
+        z=collector.computeArmMotorSpeed(false, true);
+         org.junit.Assert.assertEquals(-1.0, z, 0.001);
     }
 }

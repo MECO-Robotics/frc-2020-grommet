@@ -28,7 +28,24 @@ public class BallCollectionSubsystem {
      * @return The motor speed to apply to the lifter arm
      */
     public double computeArmMotorSpeed(boolean upButton, boolean downButton) {
-        return 0.0;
+       
+        if (upButton == true){
+            return (1);
+        } 
+        else {
+            
+            if (downButton == true){
+                return (-1);
+            }
+                
+            else    {
+                  return (0);           
+                  
+ 
+            }
+            
+        }
+    
     }
     
     /**
