@@ -183,7 +183,22 @@ public class Robot extends TimedRobot {
   }
 
     public void teleopPeriodicNew() {
-        
+        double pilotRightTrigger = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
+        double copilotRightTrigger = Utils.deadzone(m_stick2.getRawAxis(3), 0.1);
+        double pilotLeftTrigger = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
+        double copilotLeftTrigger = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
+        double pilotLeftStickY = Utils.deadzone(m_stick.getY(), 0.1);
+        double pilotRightStickX = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
+        boolean copilotAButton = m_stick2.getRawButton(1);
+        boolean copilotYButton = m_stick2.getRawButton(4);
+        boolean pilotLeftBumper = m_stick.getRawButton(5);
+        boolean copilotBButton = m_stick2.getRawButton(2);
+        double throttle = Math.pow(pilotLeftStickY, 2) * Utils.sign(pilotLeftStickY);
+        double turn = Math.pow(pilotRightStickX, 2) * Utils.sign(pilotRightStickX);
+        double armLiftPower = 0.5;
+   
+   
+    updateTelemtry();  
     }
     
     
