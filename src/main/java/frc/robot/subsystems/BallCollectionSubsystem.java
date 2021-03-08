@@ -95,6 +95,21 @@ public class BallCollectionSubsystem {
      * the motor speed should be 0.
      */
     public double computeRollerSpeed(double intakeTriggerLevel, double outTakeTriggerLevel) {
+        
+        /******** EXISTING CODE IN ROBOT.JAVA *********
+        
+            if (leftTrigger2 > 0)
+                intake.setSpeed(-leftTrigger2);
+            else if (rightTrigger2 > 0)
+                intake.setSpeed(rightTrigger2);
+            else
+                intake.setSpeed(0);
+
+        ***********************************************/
+        
+        
+        
+        
         return 0.0;
     }
     
