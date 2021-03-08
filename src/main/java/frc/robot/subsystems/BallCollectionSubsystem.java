@@ -32,7 +32,19 @@ public class BallCollectionSubsystem {
      * @return The motor speed to apply to the lifter arm
      */
     public double computeArmMotorSpeed(boolean upButton, boolean downButton, boolean topLimintSwich, boolean bottomLimitSwich) {
-       
+        
+        // IF up button pressed THEN
+        //     IF down button pressed THEN
+        //         OOPS! Accidentally pressed both - do nothing
+        //     ELSE
+        //         IF the top hasn't been reached THEN
+        //             Return a motor speed for raising fast
+        //             Start a timer for the time 
+        //         ELSE
+        //
+        // ELSE
+        //
+        
         if (upButton == true){
             return (1);
         } 
