@@ -27,7 +27,7 @@ public class BallCollectionSubsystem {
      * @param downButton Move the arm all the way down
      * @return The motor speed to apply to the lifter arm
      */
-    public double computeArmMotorSpeed(boolean upButton, boolean downButton) {
+    public double computeArmMotorSpeed(boolean upButton, boolean downButton, boolean topLimintSwich, boolean bottomLimitSwich) {
        
         if (upButton == true){
             return (1);
