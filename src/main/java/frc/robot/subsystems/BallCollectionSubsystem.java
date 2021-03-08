@@ -44,6 +44,29 @@ public class BallCollectionSubsystem {
         //
         // ELSE
         //
+
+        /********** HERE IS THE CURRENT CODE IN ROBOT.JAVA. NEED TO RE-DO HERE **********
+        
+                double armLiftPow = 0.5;
+
+                if (yButton && topLimitSwitch.get()) {
+                  intakeUp();
+                } else if (aButton && bottomLimitSwitch.get()) {
+                  intakeDown();
+                } else if (bButton) {
+                  armLift.set(.1);
+                } else {
+                  armLift.set(0);
+                }
+
+                if (leftBumper){
+                  armLift.set(armLiftPow);
+                }
+
+        ***********************************************************************************/
+
+
+
         
         if (upButton == true){
             return (1);
