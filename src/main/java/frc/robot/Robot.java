@@ -122,7 +122,11 @@ public class Robot extends TimedRobot {
     intake.set(0);
   }
 
-  /**
+ // 
+    
+    /** 
+  
+  
    * This function is called periodically during teleoperated mode.
    */
 
@@ -170,11 +174,11 @@ public class Robot extends TimedRobot {
     
     if (yButton && topLimitSwitch.get()) {
       intakeUp();
-    } else if (aButton && bottomLimitSwitch.get()) {
+    else if (aButton && bottomLimitSwitch.get()) {
       intakeDown();
-    } else if (bButton) {
+    else if (bButton) {
       armLift.set(.1);
-    } else {
+    else {
       armLift.set(0);
     }
 
@@ -255,24 +259,24 @@ public class Robot extends TimedRobot {
     while (driveSubsystem.leftEncoder.getDistance()<far){
       driveSubsystem.tankDrive(-.5, -.5);
     }
-    driveSubsystem.tankDrive(0, 0);
+      driveSubsystem.tankDrive(0, 0);
    }
    public void turnRight(double turn){
     while (driveSubsystem.leftEncoder.getDistance()<turn){
       driveSubsystem.tankDrive(-1, 1);
     }
-    driveSubsystem.tankDrive(0, 0);
+      driveSubsystem.tankDrive(0, 0);
    }
    public void turnLeft(double turn){
      while (driveSubsystem.leftEncoder.getDistance()<turn){
        driveSubsystem.tankDrive(1, -1);
      }
-     driveSubsystem.tankDrive(0, 0);
+      driveSubsystem.tankDrive(0, 0);
    }
    public void driveBack(double far){
     while (driveSubsystem.leftEncoder.getDistance()<far){
       driveSubsystem.tankDrive(1, 1);
     }
-    driveSubsystem.tankDrive(0, 0);
+      driveSubsystem.tankDrive(0, 0);
    }
 }

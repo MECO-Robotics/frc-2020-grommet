@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import frc.robot.Map;
 import java.lang.Math;
-
+import 
 /**
  * Motor computation class for the Ball Collection subsystems
  * 
@@ -77,7 +77,7 @@ public class BallCollectionSubsystem {
                 return (-1);
             }
                 
-            else    {
+            else     {
                   return (0);           
                   
  
