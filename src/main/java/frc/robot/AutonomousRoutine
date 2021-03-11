@@ -1,7 +1,0 @@
-package frc.robot;
-
-class AutonomousRoutine {
-
-    public AutonomousRoutine() {
-    }
-}
