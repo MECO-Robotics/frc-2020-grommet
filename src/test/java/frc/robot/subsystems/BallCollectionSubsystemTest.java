@@ -12,12 +12,12 @@ public class BallCollectionSubsystemTest {
         
         
         
-        double z=  collector.computeArmMotorSpeed(true, false, false, false);
+        double z=  collector.computeArmMotorSpeed(true, false, true, false, false);
         org.junit.Assert.assertEquals(1.0, z, 0.001);
 
         
         
-        z=collector.computeArmMotorSpeed(false, true, true, true);
+        z=collector.computeArmMotorSpeed(false, true, false, true, true);
          org.junit.Assert.assertEquals(-1.0, z, 0.001);
     }
 }

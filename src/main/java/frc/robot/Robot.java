@@ -176,7 +176,7 @@ public class Robot extends TimedRobot {
       intakeUp();
     } else if (aButton && bottomLimitSwitch.get()) {
       intakeDown();
-    } else if (bButton) {
+    } else if (bButton) {  // go up slow
       armLift.set(.1);
     } else {
       armLift.set(0);
@@ -209,10 +209,14 @@ public class Robot extends TimedRobot {
    
         BallCollectionSubsystem collector=new BallCollectionSubsystem();
         
-        double armMotorSpeed= collector.computeArmMotorSpeed(
-            copilotYButton, copilotAButton, topLimitSwitch.get(), bottomLimitSwitch.get() );
+        double armMotorSpeed = collector.computeArmMotorSpeed(
+            copilotYButton,            // up button
+            copilotAButton,            // dn button
+            copilotBButton,            // up slow button
+            topLimitSwitch.get(),      // top limit switch HAS NOT been reached (normally closed switch)
+            bottomLimitSwitch.get() ); // btm limit switch HAS NOT been reached (normally closed switch)
         
-        
+        armLift.set(armMotorSpeed);
         
         updateTelemtry();  
     }
@@ -241,7 +245,7 @@ public class Robot extends TimedRobot {
    
    public void intakeDown(){
       armLift.set(-.5);
-      m_timer.delay(.5);
+      m_timer.delay(.7);
       armLift.set(0);
    
   }

@@ -15,6 +15,8 @@ import java.lang.Math;
  */
 public class BallCollectionSubsystem {
 
+    double currentArmMotorSpeed = 0.0;
+    
     public BallCollectionSubsystem() {
     }
     
@@ -31,20 +33,49 @@ public class BallCollectionSubsystem {
      *
      * @return The motor speed to apply to the lifter arm
      */
-    public double computeArmMotorSpeed(boolean upButton, boolean downButton, boolean topLimintSwich, boolean bottomLimitSwich) {
+    public double computeArmMotorSpeed(
+        boolean upButton, 
+        boolean downButton,
+        boolean upSlowButton,
+        boolean topLimintSwich, 
+        boolean bottomLimitSwich) {
         
         // IF up button pressed THEN
-        //     IF down button pressed THEN
-        //         OOPS! Accidentally pressed both - do nothing
-        //     ELSE
-        //         IF the top hasn't been reached THEN
-        //             Return a motor speed for raising fast
-        //             Start a timer for the time 
-        //         ELSE
-        //
+        //   IF up limit NOT reached THEN
+        //     Set currentArmMotorSpeed to 0.7
+        //     Return a + 0.7 motor speed for raising fast
+        //     Start a timer for the time 
+        //   ELSE
+        //     Set currentArmMotorSpeed = 0
+        //     Return 0 motor speed - STOP
+        // ELSE IF down button pressed THEN
+        //   IF down limit NOT reached THEN
+        //     Set currentArmMotorSpeed = -0.7
+        //     Return a - 0.7 motor speed
+        //   ELSE
+        //     Set currentArmMotorSpeed = 0
+        //     Return 0 - STOP
+        // ELSE IF slow up button pressed THEN
+        //   IF up limit NOT reached THEN
+        //     Return a + 0.1 (slow) motor speed for raising fast
+        //     Start a timer for the time 
+        //   ELSE
+        //     Set currentArmMotorSpeed = 0
+        //     Return 0 motor speed - STOP
         // ELSE
-        //
-
+        // IF currentArmMotorSpeed > 0.0 THEN
+        //   IF up limit switch reached THEN
+        //     Set currentArmMotorSpeed = 0
+        //     Return 0 - STOP
+        //   ELSE
+        //     Return currentArmMotorSpeed - keep going!
+        // ELSE IF currentArmMotorSpeed < 0.0 THEN
+        //   IF down limit switch reached THEN
+        //     Set currentArmMotorSpeed = 0
+        //     Return 0 - STOP
+        //   ELSE
+        //     Return currentArmMotorSpeed - Keep going!
+        
         /********** HERE IS THE CURRENT CODE IN ROBOT.JAVA. NEED TO RE-DO HERE **********
         
                 double armLiftPow = 0.5;
