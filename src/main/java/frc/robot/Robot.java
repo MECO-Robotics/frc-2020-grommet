@@ -27,7 +27,8 @@ import frc.robot.subsystems.BallCollectionSubsystem;
  */
 public class Robot extends TimedRobot {
   
-  public DriveSubsystem driveSubsystem;
+  DriveSubsystem driveSubsystem;
+  BallCollectionSubsystem collector;
 
   Victor armLift = new Victor(Map.ARM_LIFT);
   Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
@@ -48,6 +49,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     
     driveSubsystem = new DriveSubsystem();
+    collector = new BallCollectionSubsystem();
+      
     armLift.setInverted(false);
     bottomLimitSwitch = new DigitalInput(5);
     topLimitSwitch = new DigitalInput(4); 
@@ -58,7 +61,6 @@ public class Robot extends TimedRobot {
     autoSelector.addOption("grab and score", "grab and score");
     SmartDashboard.putData("Auto Selector", autoSelector);
     SmartDashboard.putNumber("Grab Balls Distance", 42);
-    
   }
 
   String auto;
@@ -203,11 +205,23 @@ public class Robot extends TimedRobot {
         boolean copilotYButton = m_stick2.getRawButton(4);
         boolean copilotBButton = m_stick2.getRawButton(2);
         
+        //
+        // Drive Subsystem - Compute split arcade values
+        //
+        
         double throttle = Math.pow(pilotLeftStickY, 2) * Utils.sign(pilotLeftStickY);
         double turn = Math.pow(pilotRightStickX, 2) * Utils.sign(pilotRightStickX);
+        
+        driveSubsystem.arcadeDrive(throttle, turn);
+
+        
+        
+        // Not sure how this is used (or if needed)
         double armLiftPower = 0.5;
-   
-        BallCollectionSubsystem collector=new BallCollectionSubsystem();
+        
+        //
+        // Ball Collection Subsystem
+        //
         
         double armMotorSpeed = collector.computeArmMotorSpeed(
             copilotYButton,            // up button
@@ -217,6 +231,11 @@ public class Robot extends TimedRobot {
             bottomLimitSwitch.get() ); // btm limit switch HAS NOT been reached (normally closed switch)
         
         armLift.set(armMotorSpeed);
+        
+        double intakeMotorSpeed = collector.computeRollerSpeed(copilotLeftTrigger, copilotRightTrigger);
+        
+         intake.setSpeed(intakeMotorSpeed);
+        
         
         updateTelemtry();  
     }
