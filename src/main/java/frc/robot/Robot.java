@@ -174,11 +174,11 @@ public class Robot extends TimedRobot {
     
     if (yButton && topLimitSwitch.get()) {
       intakeUp();
-    else if (aButton && bottomLimitSwitch.get()) {
+    } else if (aButton && bottomLimitSwitch.get()) {
       intakeDown();
-    else if (bButton) {
+    } else if (bButton) {
       armLift.set(.1);
-    else {
+    } else {
       armLift.set(0);
     }
 

@@ -32,17 +32,22 @@ class AutonomousRoutine {
     }
     
     public boolean isComplete() {
+        return true;
     }
     
     public double getLeftMotorSpeed() {
+        return 0.0;
     }
     
     public double getRightMotorSpeed() {
+        return 0.0;
     }
     
     public double getBallCollectionArmLiftSpeed() {
+        return 0.0;
     }
     
     public double getBallCollectionIntakeRotorSpeed() {
+        return 0.0;
     }
 }
