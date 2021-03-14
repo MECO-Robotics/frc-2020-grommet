@@ -40,6 +40,21 @@ public class BallCollectionSubsystem {
         boolean topLimintSwich, 
         boolean bottomLimitSwich) {
         
+        
+        
+        if (upButtonPressed == true) {
+            if (upLimitSwitch == true) {
+            
+            }
+        }
+            
+
+
+            
+            
+        
+           
+        
         // IF up button pressed THEN
         //   IF up limit NOT reached THEN
         //     Set currentArmMotorSpeed to 0.7
