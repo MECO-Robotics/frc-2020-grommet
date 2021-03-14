@@ -39,37 +39,41 @@ public class BallCollectionSubsystem {
         boolean upSlowButton,
         boolean topLimintSwich, 
         boolean bottomLimitSwich) {
-        
-        
-        
-        if (upButtonPressed == true) {
-            if (upLimitSwitch == true) {
-            
-            }
-        }
-            
-
-
-            
-            
-        
-           
+                   
         
         // IF up button pressed THEN
         //   IF up limit NOT reached THEN
-        //     Set currentArmMotorSpeed to 0.7
-        //     Return a + 0.7 motor speed for raising fast
-        //     Start a timer for the time 
+        //     Set motor speed to 0.7
         //   ELSE
-        //     Set currentArmMotorSpeed = 0
-        //     Return 0 motor speed - STOP
+        //     Set motor speed to 0
+        
+        if (upButton == true) {
+            if (topLimitSwitch == true) {
+                // NATE: Finish this line, then uncomment:
+                // currentArmMotorSpeed = 
+            } else {
+                // NATE: Finish this line, then uncomment:
+                // currentArmMotorSpeed = 
+            }
+        }
+
         // ELSE IF down button pressed THEN
         //   IF down limit NOT reached THEN
-        //     Set currentArmMotorSpeed = -0.7
-        //     Return a - 0.7 motor speed
+        //     Set motor speed to 0.7
         //   ELSE
-        //     Set currentArmMotorSpeed = 0
-        //     Return 0 - STOP
+        //     Set motor speed to 0.0
+        
+        // NATE - Complete and uncomment the following section
+        /*
+        else if (  ) {
+            if (  ) {
+                
+            } else {
+                
+            }
+        }
+        */
+        
         // ELSE IF slow up button pressed THEN
         //   IF up limit NOT reached THEN
         //     Return a + 0.1 (slow) motor speed for raising fast
