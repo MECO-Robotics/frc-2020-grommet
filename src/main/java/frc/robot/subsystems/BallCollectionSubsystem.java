@@ -49,10 +49,8 @@ public class BallCollectionSubsystem {
         
         if (upButton == true) {
             if (topLimitSwitch == true) {
-                
                  currentArmMotorSpeed = 0.07;
             } else {
-                
                  currentArmMotorSpeed = 0;
             }
         }
@@ -75,65 +73,48 @@ public class BallCollectionSubsystem {
         
         // ELSE IF slow up button pressed THEN
         //   IF up limit NOT reached THEN
-        //     Return a + 0.1 (slow) motor speed for raising fast
-        //     Start a timer for the time 
+        //     Set motor speed to 0.1
         //   ELSE
-        //     Set currentArmMotorSpeed = 0
-        //     Return 0 motor speed - STOP
-        // ELSE
-        // IF currentArmMotorSpeed > 0.0 THEN
-        //   IF up limit switch reached THEN
-        //     Set currentArmMotorSpeed = 0
-        //     Return 0 - STOP
-        //   ELSE
-        //     Return currentArmMotorSpeed - keep going!
-        // ELSE IF currentArmMotorSpeed < 0.0 THEN
-        //   IF down limit switch reached THEN
-        //     Set currentArmMotorSpeed = 0
-        //     Return 0 - STOP
-        //   ELSE
-        //     Return currentArmMotorSpeed - Keep going!
+        //     Set motor speed to 0.0
         
-        /********** HERE IS THE CURRENT CODE IN ROBOT.JAVA. NEED TO RE-DO HERE **********
-        
-                double armLiftPow = 0.5;
-
-                if (yButton && topLimitSwitch.get()) {
-                  intakeUp();
-                } else if (aButton && bottomLimitSwitch.get()) {
-                  intakeDown();
-                } else if (bButton) {
-                  armLift.set(.1);
-                } else {
-                  armLift.set(0);
-                }
-
-                if (leftBumper){
-                  armLift.set(armLiftPow);
-                }
-
-        ***********************************************************************************/
-
-
-
-        
-        if (upButton == true){
-            return (1);
-        } 
-        else {
-            
-            if (downButton == true){
-                return (-1);
+        // NATE: Uncomment, then replace the ????? with the 
+        //            correct variable name or value
+        /*
+        else if ( ?????? == true ) {
+            if ( ?????? == true ) {
+                ?????? = ?? ;
+            } else {
+                ?????? = ?? ;
             }
-                
-            else     {
-                  return (0);           
-                  
- 
-            }
-            
         }
-    
+        */
+        
+        // ELSE IF motor speed IS GREATER THAN 0.0 THEN
+        //   IF up limit switch reached THEN
+        //     Set set motor speed to 0
+
+        // NATE: Uncomment, then replace each question mark place holder
+        /*
+        else if ( currentArmMotorSpeed ?????? 0.0) {
+            if ( ?????? ) {
+                ???????
+            }
+        }
+        */
+
+        
+        
+        // NATE: FINAL EXAM! Write the code using the following 
+        //            3 lines of pseudo code 
+        //        HINT: Copy & paste the previous section of code!
+
+        // ELSE IF motor speed LESS THAN 0 THEN
+        //   IF down limit switch reached THEN
+        //     Set motor speed to 0
+
+        // ???????????????????
+        
+        return currentArmMotorSpeed;
     }
     
     
