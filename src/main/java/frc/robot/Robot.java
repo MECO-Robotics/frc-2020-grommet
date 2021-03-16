@@ -191,7 +191,8 @@ public class Robot extends TimedRobot {
   }
 
     public void teleopPeriodicNew() {
-        //pilot controls
+        
+        // Pilot controls
         double pilotRightTrigger = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
         double pilotLeftTrigger = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
         double pilotLeftStickY = Utils.deadzone(m_stick.getY(), 0.1);
@@ -205,6 +206,7 @@ public class Robot extends TimedRobot {
         boolean copilotYButton = m_stick2.getRawButton(4);
         boolean copilotBButton = m_stick2.getRawButton(2);
         
+        
         //
         // Drive Subsystem - Compute split arcade values
         //
@@ -216,12 +218,11 @@ public class Robot extends TimedRobot {
 
         
         
-        // Not sure how this is used (or if needed)
-        double armLiftPower = 0.5;
-        
         //
         // Ball Collection Subsystem
         //
+        
+        // Arm
         
         double armMotorSpeed = collector.computeArmMotorSpeed(
             copilotYButton,            // up button
@@ -232,9 +233,13 @@ public class Robot extends TimedRobot {
         
         armLift.set(armMotorSpeed);
         
-        double intakeMotorSpeed = collector.computeRollerSpeed(copilotLeftTrigger, copilotRightTrigger);
+        // Intake 
         
-         intake.setSpeed(intakeMotorSpeed);
+        double intakeMotorSpeed = collector.computeRollerSpeed(
+            copilotLeftTrigger,        // intake level
+            copilotRightTrigger);      // outtake level
+        
+        intake.setSpeed(intakeMotorSpeed);
         
         
         updateTelemtry();  

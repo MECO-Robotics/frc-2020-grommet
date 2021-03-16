@@ -126,21 +126,23 @@ public class BallCollectionSubsystem {
      */
     public double computeRollerSpeed(double intakeTriggerLevel, double outTakeTriggerLevel) {
         
-        /******** EXISTING CODE IN ROBOT.JAVA *********
+        double intakeMotorSpeed = 0;
         
-            if (leftTrigger2 > 0)
-                intake.setSpeed(-leftTrigger2);
-            else if (rightTrigger2 > 0)
-                intake.setSpeed(rightTrigger2);
-            else
-                intake.setSpeed(0);
-
-        ***********************************************/
+        // IF intake level GREATER THAN 0 THEN
+        //   Set intake motor speed to the negative of the intake level
+        // ELSE IF outtake level GREATER THAN 0 THEN
+        //   Set the intake motor speed to the outtake trigger level
         
+        // NATE Uncomment and complete the code:
+        /*
+        if ( ???? > 0 )  {
+            intakeMotorSpeed = ?????;            
+        } else if ( ???? > 0 ) {
+            ????? = outTakeTriggerLevel;
+        }
+        */
         
-        
-        
-        return 0.0;
+        return intakeMotorSpeed;
     }
     
 }
