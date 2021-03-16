@@ -49,7 +49,7 @@ public class BallCollectionSubsystem {
         
         if (upButton == true) {
             if (topLimitSwitch == true) {
-                 currentArmMotorSpeed = 0.07;
+                 currentArmMotorSpeed = 0.7;
             } else {
                  currentArmMotorSpeed = 0;
             }
@@ -64,7 +64,7 @@ public class BallCollectionSubsystem {
        
         else if (downButton == true  ) {
             if ( bottomLimitSwich == true ) {
-                currentArmMotorSpeed = 0.07;
+                currentArmMotorSpeed = -0.7;
             } else {
                 currentArmMotorSpeed = 0;
             }
@@ -77,45 +77,44 @@ public class BallCollectionSubsystem {
         //   ELSE
         //     Set motor speed to 0.0
         
-        // NATE: Uncomment, then replace the ????? with the 
-        //            correct variable name or value
-        /*
-        else if ( ?????? == true ) {
-            if ( ?????? == true ) {
-                ?????? = ?? ;
+    
+        else if ( upSlowButton == true ) {
+            if ( topLimitSwitch == true ) {
+                currentArmMotorSpeed = 0.1 ;
             } else {
-                ?????? = ?? ;
+                currentArmMotorSpeed = 0.0 ;
             }
         }
-        */
+        
         
         // ELSE IF motor speed IS GREATER THAN 0.0 THEN
         //   IF up limit switch reached THEN
         //     Set set motor speed to 0
 
         // NATE: Uncomment, then replace each question mark place holder
-        /*
-        else if ( currentArmMotorSpeed ?????? 0.0) {
-            if ( ?????? ) {
-                ???????
+        
+        else if ( currentArmMotorSpeed > 0.0) {
+            if ( topLimitSwitch == false) {
+                currentArmMotorSpeed = 0.0;
             }
         }
-        */
+        
 
         
         
-        // NATE: FINAL EXAM! Write the code using the following 
-        //            3 lines of pseudo code 
-        //        HINT: Copy & paste the previous section of code!
-
+     
         // ELSE IF motor speed LESS THAN 0 THEN
         //   IF down limit switch reached THEN
         //     Set motor speed to 0
 
-        // ???????????????????
+        else if (currentArmMotorSpeed < 0) {
+            if (bottomLimitSwich == false) {
+                currentArmMotorSpeed = 0.0;
+            }    
+        }
         
         return currentArmMotorSpeed;
-    }
+    }        
     
     
     
