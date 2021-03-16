@@ -15,7 +15,7 @@ public class BallCollectionSubsystemTest {
         boolean[] slw = new boolean[] { false, false, false, true,  false, false, false, true,  false, false, false, true };
         boolean[] top = new boolean[] { true,  true,  true,  true,  false, false, false, false, true,  true,  true,  true };
         boolean[] btm = new boolean[] { true,  true,  true,  true,  true,  true,  true, true,  false, false, false, false };
-        double[]  spd = new double[]  { 0,     0.7,   -0.7,  0.1,   0,     -0.7,  0.7, 0,     0,     0.7,   0,     0.1 };
+        double[]  spd = new double[]  { 0,     0.7,   -0.7,  0.1,   0,     0.0,    0.7, 0,     0,     0.7,   0,     0.1 };
         
         // NOTE: For array index 0, the output is actually "no change",
         //       but for an initialized BallCollectionSubsystem, it should
