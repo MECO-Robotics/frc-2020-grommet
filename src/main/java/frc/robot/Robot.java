@@ -10,12 +10,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import frc.robot.subsystems.BallCollectionSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 
 
 /**
@@ -26,55 +26,82 @@ import frc.robot.subsystems.BallCollectionSubsystem;
  * directory.
  */
 public class Robot extends TimedRobot {
-  
-  DriveSubsystem driveSubsystem;
-  BallCollectionSubsystem collector;
 
-  Victor armLift = new Victor(Map.ARM_LIFT);
-  Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
-  Victor intake = new Victor(Map.INTAKE);
-  DigitalInput bottomLimitSwitch,topLimitSwitch;
-  double rightAngle = 59.28185337;
-  double turnAround = 118.5637067;
-  private final Joystick m_stick = new Joystick(0);
-  private final Joystick m_stick2 = new Joystick(1);
-  private final Timer m_timer = new Timer();
-
-  SendableChooser<String> autoSelector;
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
-  @Override
-  public void robotInit() {
+    // Subsystems
     
-    driveSubsystem = new DriveSubsystem();
-    collector = new BallCollectionSubsystem();
-      
-    armLift.setInverted(false);
-    bottomLimitSwitch = new DigitalInput(5);
-    topLimitSwitch = new DigitalInput(4); 
+    DriveSubsystem driveSubsystem;
+    BallCollectionSubsystem ballCollectionSubsystem;
 
-    autoSelector = new SendableChooser<>();
-    autoSelector.addOption("Grab Balls", "grab");
-    autoSelector.addOption("Score Balls", "score");
-    autoSelector.addOption("grab and score", "grab and score");
-    SmartDashboard.putData("Auto Selector", autoSelector);
-    SmartDashboard.putNumber("Grab Balls Distance", 42);
-  }
+    // Inputs / Outputs
+    Victor armLift = new Victor(Map.ARM_LIFT);
+    Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
+    Victor intake = new Victor(Map.INTAKE);
+    DigitalInput bottomLimitSwitch,topLimitSwitch;
+    private final Joystick m_stick = new Joystick(0);
+    private final Joystick m_stick2 = new Joystick(1);
 
-  String auto;
+    //
+    // Autonomous
+    //
+    
+    SendableChooser<String> autoSelector;           // List of autonomous modes
+    String autonomousMode;                          // Current mode selected at drivers station
+    double rightAngle = 59.28185337;
+    double turnAround = 118.5637067;
+    private final Timer m_timer = new Timer();
 
-  /**
-   * This function is run once each time the robot enters autonomous mode.
-   */
-  @Override
-  public void autonomousInit() {
-    auto = autoSelector.getSelected();
-    m_timer.reset();
-    m_timer.start();
-    driveSubsystem.resetEncoders();
-  }
+    //
+    // Code Version selector
+    //     The code version selector on the smart dashboard allows different
+    //     versions of the code to coexist to allow the programming team to 
+    //     test new versions of the code without having to copy a new jar
+    //     file to the robot.
+    //
+    
+    SendableChooser<String> codeSelector;           // List of code versions available
+    String selectedCodeVersion;                     // Current version selected at drivers station
+
+    
+    /**
+     * This function is run when the robot is first started up and should be
+     * used for any initialization code.
+     */
+    @Override
+    public void robotInit() {
+    
+        driveSubsystem = new DriveSubsystem();
+        ballCollectionSubsystem = new BallCollectionSubsystem();
+
+        armLift.setInverted(false);
+        bottomLimitSwitch = new DigitalInput(5);
+        topLimitSwitch = new DigitalInput(4); 
+
+        autoSelector = new SendableChooser<>();
+        autoSelector.addOption("Grab Balls", "grab");
+        autoSelector.addOption("Score Balls", "score");
+        autoSelector.addOption("grab and score", "grab and score");
+        SmartDashboard.putData("Auto Selector", autoSelector);
+        SmartDashboard.putNumber("Grab Balls Distance", 42);
+        
+        SmartDashboard.putBoolean("Alternate Code", false);
+        codeSelector = new SendableChooser<>();
+        codeSelector.addDefault("Default", "default");
+        codeSelector.addOption("Alternate", "alt");
+        SmartDashboard.putData("Code Selector", codeSelector);
+    }
+
+    /**
+     * This function is run once each time the robot enters autonomous mode.
+     */
+    @Override
+    public void autonomousInit() {
+        selectedCodeVersion = codeSelector.getSelected();
+        
+        autonomousMode = autoSelector.getSelected();
+        m_timer.reset();
+        m_timer.start();
+        driveSubsystem.resetEncoders();
+    }
 
   /**
    * This function is called periodically during autonomous.
@@ -82,13 +109,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     
-    if (auto.equals("score")) {
+    if (autonomousMode.equals("score")) {
       driveForward(32);
       intake.set(1);   
       m_timer.delay(.5);
       intake.set(0);
       driveBack(0); 
-    } else if (auto.equals("grab")) {
+    } else if (autonomousMode.equals("grab")) {
       double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
       intakeDown();
       intake.set(-1);
@@ -96,7 +123,7 @@ public class Robot extends TimedRobot {
       intake.set(0);
       intakeUp();
       m_timer.delay(10);
-    } else if (auto.equals("grab and score")){
+    } else if (autonomousMode.equals("grab and score")){
       driveForward(86.63);
       intakeDown();
       intake.set(.5);
@@ -115,82 +142,92 @@ public class Robot extends TimedRobot {
     updateTelemtry();
   }
 
-  /**
-   * This function is called once each time the robot enters teleoperated mode.
-   */
-  @Override
-  public void teleopInit() {
-    armLift.set(0);
-    intake.set(0);
-  }
+    /**
+     * This function is called once each time the robot enters teleoperated mode.
+     */
+    @Override
+    public void teleopInit() {
+        selectedCodeVersion = codeSelector.getSelected();
 
- // 
+        armLift.set(0);
+        intake.set(0);
+    }
+
     
     /** 
-  
-  
-   * This function is called periodically during teleoperated mode.
-   */
-
-   @Override
-   public void disabledPeriodic() {
-     //System.out.println("Left encoder: " + driveSubsystem.leftEncoder.getDistance());
-     //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
-   }
-
-  public boolean intakeButtonWasHeld = false;
-
-  @Override
-  public void teleopPeriodic() {
-    double rightTrigger1 = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
-    double rightTrigger2 = Utils.deadzone(m_stick2.getRawAxis(3), 0.1);
-    double leftTrigger1 = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
-    double leftTrigger2 = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
-    double yAxisLeftStick = Utils.deadzone(m_stick.getY(), 0.1);
-    double xAxisRightStick = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
-    boolean aButton = m_stick2.getRawButton(1);
-    boolean yButton = m_stick2.getRawButton(4);
-    boolean leftBumper = m_stick.getRawButton(5);
-    boolean bButton = m_stick2.getRawButton(2);
-    double throttle = Math.pow(yAxisLeftStick, 2) * Utils.sign(yAxisLeftStick);
-    double turn = Math.pow(xAxisRightStick, 2) * Utils.sign(xAxisRightStick);
-    double armLiftPow = 0.5;
-   
-    driveSubsystem.arcadeDrive(throttle, turn);
-    
-    if (leftTrigger1 > 0)
-      liftExtender.setSpeed(-leftTrigger1);
-    else if (rightTrigger1 > 0)
-      liftExtender.setSpeed(rightTrigger1);
-    else
-      liftExtender.setSpeed(0);
-
-
-    if (leftTrigger2 > 0)
-      intake.setSpeed(-leftTrigger2);
-    else if (rightTrigger2 > 0)
-      intake.setSpeed(rightTrigger2);
-    else
-      intake.setSpeed(0);
-    
-    
-    if (yButton && topLimitSwitch.get()) {
-      intakeUp();
-    } else if (aButton && bottomLimitSwitch.get()) {
-      intakeDown();
-    } else if (bButton) {  // go up slow
-      armLift.set(.1);
-    } else {
-      armLift.set(0);
+     * This function is called periodically during teleoperated mode.
+     */
+    @Override
+    public void disabledPeriodic() {
+        //System.out.println("Left encoder: " + driveSubsystem.leftEncoder.getDistance());
+        //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
     }
 
-    if (leftBumper){
-      armLift.set(armLiftPow);
+    @Override
+    public void teleopPeriodic() {
+        if(selectedCodeVersion.equals("default")) {
+            teleopPeriodicDefault();
+        } else if(selectedCodeVersion.equals("alt")) {
+            teleopPeriodicAlternate();
+        }
     }
-    updateTelemtry();
-  }
+    
+    /**
+     * Default code version for teleopPeriodic
+     */
+    private void teleopPeriodicDefault() {
+        double rightTrigger1 = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
+        double rightTrigger2 = Utils.deadzone(m_stick2.getRawAxis(3), 0.1);
+        double leftTrigger1 = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
+        double leftTrigger2 = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
+        double yAxisLeftStick = Utils.deadzone(m_stick.getY(), 0.1);
+        double xAxisRightStick = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
+        boolean aButton = m_stick2.getRawButton(1);
+        boolean yButton = m_stick2.getRawButton(4);
+        boolean leftBumper = m_stick.getRawButton(5);
+        boolean bButton = m_stick2.getRawButton(2);
+        double throttle = Math.pow(yAxisLeftStick, 2) * Math.signum(yAxisLeftStick);
+        double turn = Math.pow(xAxisRightStick, 2) * Math.signum(xAxisRightStick);
+        double armLiftPow = 0.5;
 
-    public void teleopPeriodicNew() {
+        driveSubsystem.arcadeDrive(throttle, turn);
+
+        if (leftTrigger1 > 0)
+          liftExtender.setSpeed(-leftTrigger1);
+        else if (rightTrigger1 > 0)
+          liftExtender.setSpeed(rightTrigger1);
+        else
+          liftExtender.setSpeed(0);
+
+
+        if (leftTrigger2 > 0)
+          intake.setSpeed(-leftTrigger2);
+        else if (rightTrigger2 > 0)
+          intake.setSpeed(rightTrigger2);
+        else
+          intake.setSpeed(0);
+
+
+        if (yButton && topLimitSwitch.get()) {
+          intakeUp();
+        } else if (aButton && bottomLimitSwitch.get()) {
+          intakeDown();
+        } else if (bButton) {  // go up slow
+          armLift.set(.1);
+        } else {
+          armLift.set(0);
+        }
+
+        if (leftBumper){
+          armLift.set(armLiftPow);
+        }
+        updateTelemtry();
+    }
+
+    /**
+     * Alternate code version for teleopPeriodic
+     */
+    private void teleopPeriodicAlternate() {
         
         // Pilot controls
         double pilotRightTrigger = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
@@ -210,11 +247,27 @@ public class Robot extends TimedRobot {
         //
         // Drive Subsystem - Compute split arcade values
         //
+        // Square the stick values and restore the sign 
+        // TODO: improve this. We could be capping our throttle or turn, or 
+        //       not maxing out.
         
-        double throttle = Math.pow(pilotLeftStickY, 2) * Utils.sign(pilotLeftStickY);
-        double turn = Math.pow(pilotRightStickX, 2) * Utils.sign(pilotRightStickX);
+        double throttle = Math.pow(pilotLeftStickY, 2) * Math.signum(pilotLeftStickY);
+        double turn = Math.pow(pilotRightStickX, 2) * Math.signum(pilotRightStickX);
         
         driveSubsystem.arcadeDrive(throttle, turn);
+
+
+        //
+        // Lift Extendor
+        //
+        
+        if (pilotLeftTrigger > 0) {
+            liftExtender.setSpeed(-pilotLeftTrigger);
+        } else if (pilotRightTrigger > 0) {
+            liftExtender.setSpeed(pilotRightTrigger);
+        } else {
+            liftExtender.setSpeed(0);
+        }
 
         
         
@@ -224,7 +277,7 @@ public class Robot extends TimedRobot {
         
         // Arm
         
-        double armMotorSpeed = collector.computeArmMotorSpeed(
+        double armMotorSpeed = ballCollectionSubsystem.computeArmMotorSpeed(
             copilotYButton,            // up button
             copilotAButton,            // dn button
             copilotBButton,            // up slow button
@@ -233,9 +286,9 @@ public class Robot extends TimedRobot {
         
         armLift.set(armMotorSpeed);
         
-        // Intake 
+        // Intake roller
         
-        double intakeMotorSpeed = collector.computeRollerSpeed(
+        double intakeMotorSpeed = ballCollectionSubsystem.computeRollerSpeed(
             copilotLeftTrigger,        // intake level
             copilotRightTrigger);      // outtake level
         
