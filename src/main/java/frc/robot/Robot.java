@@ -27,18 +27,23 @@ import frc.robot.subsystems.DriveSubsystem;
  */
 public class Robot extends TimedRobot {
 
+    //
     // Subsystems
+    //
     
     DriveSubsystem driveSubsystem;
     BallCollectionSubsystem ballCollectionSubsystem;
 
+    //
     // Inputs / Outputs
+    //
+    
     Victor armLift = new Victor(Map.ARM_LIFT);
     Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
     Victor intake = new Victor(Map.INTAKE);
     DigitalInput bottomLimitSwitch,topLimitSwitch;
-    private final Joystick m_stick = new Joystick(0);
-    private final Joystick m_stick2 = new Joystick(1);
+    private final Joystick pilotStick = new Joystick(0);
+    private final Joystick copilotStick = new Joystick(1);
 
     //
     // Autonomous
@@ -48,7 +53,7 @@ public class Robot extends TimedRobot {
     String autonomousMode;                          // Current mode selected at drivers station
     double rightAngle = 59.28185337;
     double turnAround = 118.5637067;
-    private final Timer m_timer = new Timer();
+    private final Timer timer = new Timer();
 
     //
     // Code Version selector
@@ -98,49 +103,51 @@ public class Robot extends TimedRobot {
         selectedCodeVersion = codeSelector.getSelected();
         
         autonomousMode = autoSelector.getSelected();
-        m_timer.reset();
-        m_timer.start();
+        timer.reset();
+        timer.start();
         driveSubsystem.resetEncoders();
     }
 
-  /**
-   * This function is called periodically during autonomous.
-   */
-  @Override
-  public void autonomousPeriodic() {
+    /**
+     * This function is called periodically during autonomous.
+     * By default, called every 20ms. 
+     */
+    @Override
+    public void autonomousPeriodic() {
     
-    if (autonomousMode.equals("score")) {
-      driveForward(32);
-      intake.set(1);   
-      m_timer.delay(.5);
-      intake.set(0);
-      driveBack(0); 
-    } else if (autonomousMode.equals("grab")) {
-      double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
-      intakeDown();
-      intake.set(-1);
-      driveForward(grabBallsDistance);
-      intake.set(0);
-      intakeUp();
-      m_timer.delay(10);
-    } else if (autonomousMode.equals("grab and score")){
-      driveForward(86.63);
-      intakeDown();
-      intake.set(.5);
-      driveForward(159.63);
-      intake.set(0);
-      turnRight(218.941);
-      driveForward(316.911);
-      turnLeft(257.63);
-      driveForward(285.38);
-      turnRight(344.661);
-      driveForward(367.461);
-      intake.set(-.5);
-      m_timer.delay(.5);
-      intake.set(0);
+        if (autonomousMode.equals("score")) {
+            driveForward(32);
+            intake.set(1);   
+            timer.delay(.5);
+            intake.set(0);
+            driveBack(0); 
+        } else if (autonomousMode.equals("grab")) {
+            double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
+            intakeDown();
+            intake.set(-1);
+            driveForward(grabBallsDistance);
+            intake.set(0);
+            intakeUp();
+            timer.delay(10);
+        } else if (autonomousMode.equals("grab and score")){
+            driveForward(86.63);
+            intakeDown();
+            intake.set(.5);
+            driveForward(159.63);
+            intake.set(0);
+            turnRight(218.941);
+            driveForward(316.911);
+            turnLeft(257.63);
+            driveForward(285.38);
+            turnRight(344.661);
+            driveForward(367.461);
+            intake.set(-.5);
+            timer.delay(.5);
+            intake.set(0);
+        }
+        
+        updateTelemetry();
     }
-    updateTelemtry();
-  }
 
     /**
      * This function is called once each time the robot enters teleoperated mode.
@@ -148,14 +155,13 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         selectedCodeVersion = codeSelector.getSelected();
-
         armLift.set(0);
         intake.set(0);
     }
 
     
     /** 
-     * This function is called periodically during teleoperated mode.
+     * This function is called when leaving any mode, such as ending teleop and switching to autonomous.
      */
     @Override
     public void disabledPeriodic() {
@@ -163,6 +169,10 @@ public class Robot extends TimedRobot {
         //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
     }
 
+    /**
+     * Called periodically during teleop mode.
+     * By default, called every 20ms. 
+     */
     @Override
     public void teleopPeriodic() {
         if(selectedCodeVersion.equals("default")) {
@@ -176,16 +186,16 @@ public class Robot extends TimedRobot {
      * Default code version for teleopPeriodic
      */
     private void teleopPeriodicDefault() {
-        double rightTrigger1 = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
-        double rightTrigger2 = Utils.deadzone(m_stick2.getRawAxis(3), 0.1);
-        double leftTrigger1 = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
-        double leftTrigger2 = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
-        double yAxisLeftStick = Utils.deadzone(m_stick.getY(), 0.1);
-        double xAxisRightStick = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
-        boolean aButton = m_stick2.getRawButton(1);
-        boolean yButton = m_stick2.getRawButton(4);
-        boolean leftBumper = m_stick.getRawButton(5);
-        boolean bButton = m_stick2.getRawButton(2);
+        double rightTrigger1 = Utils.deadzone(pilotStick.getRawAxis(3), 0.1);
+        double rightTrigger2 = Utils.deadzone(copilotStick.getRawAxis(3), 0.1);
+        double leftTrigger1 = Utils.deadzone(pilotStick.getRawAxis(2), 0.1);
+        double leftTrigger2 = Utils.deadzone(copilotStick.getRawAxis(2), 0.1);
+        double yAxisLeftStick = Utils.deadzone(pilotStick.getY(), 0.1);
+        double xAxisRightStick = Utils.deadzone(pilotStick.getRawAxis(4), 0.1);
+        boolean aButton = copilotStick.getRawButton(1);
+        boolean yButton = copilotStick.getRawButton(4);
+        boolean leftBumper = pilotStick.getRawButton(5);
+        boolean bButton = copilotStick.getRawButton(2);
         double throttle = Math.pow(yAxisLeftStick, 2) * Math.signum(yAxisLeftStick);
         double turn = Math.pow(xAxisRightStick, 2) * Math.signum(xAxisRightStick);
         double armLiftPow = 0.5;
@@ -221,7 +231,7 @@ public class Robot extends TimedRobot {
         if (leftBumper){
           armLift.set(armLiftPow);
         }
-        updateTelemtry();
+        updateTelemetry();
     }
 
     /**
@@ -230,26 +240,25 @@ public class Robot extends TimedRobot {
     private void teleopPeriodicAlternate() {
         
         // Pilot controls
-        double pilotRightTrigger = Utils.deadzone(m_stick.getRawAxis(3), 0.1);
-        double pilotLeftTrigger = Utils.deadzone(m_stick.getRawAxis(2), 0.1);
-        double pilotLeftStickY = Utils.deadzone(m_stick.getY(), 0.1);
-        double pilotRightStickX = Utils.deadzone(m_stick.getRawAxis(4), 0.1);
-        boolean pilotLeftBumper = m_stick.getRawButton(5);
+        double pilotRightTrigger = Utils.deadzone(pilotStick.getRawAxis(3), 0.1);
+        double pilotLeftTrigger = Utils.deadzone(pilotStick.getRawAxis(2), 0.1);
+        double pilotLeftStickY = Utils.deadzone(pilotStick.getY(), 0.1);
+        double pilotRightStickX = Utils.deadzone(pilotStick.getRawAxis(4), 0.1);
+        boolean pilotLeftBumper = pilotStick.getRawButton(5);
 
         // Copilot controls
-        double copilotRightTrigger = Utils.deadzone(m_stick2.getRawAxis(3), 0.1);
-        double copilotLeftTrigger = Utils.deadzone(m_stick2.getRawAxis(2), 0.1);
-        boolean copilotAButton = m_stick2.getRawButton(1);
-        boolean copilotYButton = m_stick2.getRawButton(4);
-        boolean copilotBButton = m_stick2.getRawButton(2);
+        double copilotRightTrigger = Utils.deadzone(copilotStick.getRawAxis(3), 0.1);
+        double copilotLeftTrigger = Utils.deadzone(copilotStick.getRawAxis(2), 0.1);
+        boolean copilotAButton = copilotStick.getRawButton(1);
+        boolean copilotYButton = copilotStick.getRawButton(4);
+        boolean copilotBButton = copilotStick.getRawButton(2);
         
         
         //
         // Drive Subsystem - Compute split arcade values
         //
         // Square the stick values and restore the sign 
-        // TODO: improve this. We could be capping our throttle or turn, or 
-        //       not maxing out.
+        // TODO: improve this. We could be capping our throttle or turn, or not maxing out.
         
         double throttle = Math.pow(pilotLeftStickY, 2) * Math.signum(pilotLeftStickY);
         double turn = Math.pow(pilotRightStickX, 2) * Math.signum(pilotRightStickX);
@@ -295,69 +304,72 @@ public class Robot extends TimedRobot {
         intake.setSpeed(intakeMotorSpeed);
         
         
-        updateTelemtry();  
+        updateTelemetry();  
     }
     
     
+    /**
+     * This function is called once when entering test mode. Test mode is a special mode
+     * that can be used to perform a self-test of the robot to make sure everything is 
+     * powered on, connected, and working.
+     */
+    @Override
+    public void testInit() {
+        
+    }
     
-    
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic() {
-  }
+    /**
+     * This function is called periodically during test mode.
+     */
+    @Override
+    public void testPeriodic() {
+    }
 
+    /**
+     * Updating the telemtry
+     */
+    private void updateTelemetry(){
+        SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.rightEncoder.getDistance());
+        SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.leftEncoder.getDistance());
+    }
+   
+    private void intakeDown(){
+        armLift.set(-.5);
+        timer.delay(.7);
+        armLift.set(0);
+    }
+   
+    private void intakeUp(){
+        armLift.set(.5);
+        timer.delay(.7);
+        armLift.set(0);
+    }
 
-  /** 
-   * Start work of telemtry
-   * */
-   public void telemtry(){
-   }
-   //Updating the telemtry
-   public void updateTelemtry(){
-     SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.rightEncoder.getDistance());
-     SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.leftEncoder.getDistance());
-   }
-   
-   public void intakeDown(){
-      armLift.set(-.5);
-      m_timer.delay(.7);
-      armLift.set(0);
-   
-  }
-   
-   public void intakeUp(){
-       
-       //armLift1-10
-            //chimkin
-      armLift.set(.5);
-      m_timer.delay(.7);
-      armLift.set(0);
-     
-   }
-   public void driveForward(double far){
-    while (driveSubsystem.leftEncoder.getDistance()<far){
-      driveSubsystem.tankDrive(-.5, -.5);
+    private void driveForward(double far){
+        while (driveSubsystem.leftEncoder.getDistance()<far){
+            driveSubsystem.tankDrive(-.5, -.5);
+        }
+        driveSubsystem.tankDrive(0, 0);
     }
-      driveSubsystem.tankDrive(0, 0);
-   }
-   public void turnRight(double turn){
-    while (driveSubsystem.leftEncoder.getDistance()<turn){
-      driveSubsystem.tankDrive(-1, 1);
+    
+    private void turnRight(double turn){
+        while (driveSubsystem.leftEncoder.getDistance()<turn){
+            driveSubsystem.tankDrive(-1, 1);
+        }
+        driveSubsystem.tankDrive(0, 0);
     }
-      driveSubsystem.tankDrive(0, 0);
-   }
-   public void turnLeft(double turn){
-     while (driveSubsystem.leftEncoder.getDistance()<turn){
-       driveSubsystem.tankDrive(1, -1);
-     }
-      driveSubsystem.tankDrive(0, 0);
-   }
-   public void driveBack(double far){
-    while (driveSubsystem.leftEncoder.getDistance()<far){
-      driveSubsystem.tankDrive(1, 1);
+    
+    private void turnLeft(double turn){
+        while (driveSubsystem.leftEncoder.getDistance()<turn){
+            driveSubsystem.tankDrive(1, -1);
+        }
+        driveSubsystem.tankDrive(0, 0);
     }
-      driveSubsystem.tankDrive(0, 0);
-   }
+    
+    private void driveBack(double far){
+        while (driveSubsystem.leftEncoder.getDistance()<far){
+            driveSubsystem.tankDrive(1, 1);
+        }
+        driveSubsystem.tankDrive(0, 0);
+    }
 }
