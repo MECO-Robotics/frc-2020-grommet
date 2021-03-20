@@ -145,4 +145,15 @@ public class BallCollectionSubsystem {
     }
     
 }
-
+/*
+start at 25% and increase by 10% each time. 
+allows the robot AI to find the perfect speed at witch to raise or lower the arm
+before hitting the top or bottom limit switch
+step 1: guess x = run at 0.4 seconds
+step 2: run motor for .4 seconds
+step 3: redude to .25 (keep at .25 until we reach the limit switch)
+step 4: get new "T"  (T = time to the limit switch)
+step 5: figure out what "T" is worth
+step 6: calculate new "X"  (X is the time at the 1.0 speed
+We have to do the same thing for each up and down
+*/
