@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Map;
 import java.lang.Math;
 
@@ -17,6 +18,25 @@ public class BallCollectionSubsystem {
 
     double currentArmMotorSpeed = 0.0;
     
+    // Speed to use when slowing 
+    private double ARM_MOTOR_SLOW_SPEED = 0.1;
+    
+     // Speed to use when slowing 
+     private double ARM_MOTOR_FAST_SPEED = 0.5;
+
+    // Number of seconds it took to last raise the arm
+    private double lastTimeToRaiseArm = 0.7;
+
+    // Number of seconds it took to last lower the arm
+    private double lastTimeToLowerArm = 0.7;
+
+    // What fraction of the time spent to raise or lower should be
+    // done at high speed vs. low speed
+    private static double HI_TO_LOW_ARM_SPEED_RATIO = 0.9;
+
+    // Timer to track the time spent raising or lowering
+    private Timer armTimer = new Timer();
+
     public BallCollectionSubsystem() {
     }
     
@@ -43,13 +63,13 @@ public class BallCollectionSubsystem {
         
         // IF up button pressed THEN
         //   IF up limit NOT reached THEN
-        //     Set motor speed to 0.7
+        //     Set motor speed to 0.5
         //   ELSE
         //     Set motor speed to 0
         
         if (upButton == true) {
             if (topLimitSwitch == true) {
-                 currentArmMotorSpeed = 0.7;
+                 currentArmMotorSpeed = 0.5;
             } else {
                  currentArmMotorSpeed = 0;
             }
@@ -57,14 +77,14 @@ public class BallCollectionSubsystem {
 
         // ELSE IF down button pressed THEN
         //   IF down limit NOT reached THEN
-        //     Set motor speed to 0.7
+        //     Set motor speed to 0.5
         //   ELSE
         //     Set motor speed to 0.0
         
        
         else if (downButton == true  ) {
             if ( bottomLimitSwich == true ) {
-                currentArmMotorSpeed = -0.7;
+                currentArmMotorSpeed = -0.5;
             } else {
                 currentArmMotorSpeed = 0;
             }
@@ -91,18 +111,12 @@ public class BallCollectionSubsystem {
         //   IF up limit switch reached THEN
         //     Set set motor speed to 0
 
-        // NATE: Uncomment, then replace each question mark place holder
-        
         else if ( currentArmMotorSpeed > 0.0) {
             if ( topLimitSwitch == false) {
                 currentArmMotorSpeed = 0.0;
             }
         }
         
-
-        
-        
-     
         // ELSE IF motor speed LESS THAN 0 THEN
         //   IF down limit switch reached THEN
         //     Set motor speed to 0
@@ -115,8 +129,6 @@ public class BallCollectionSubsystem {
         
         return currentArmMotorSpeed;
     }        
-    
-    
     
     /**
      * Determine the roller motor speed given the intakeTrigger level and
@@ -131,8 +143,6 @@ public class BallCollectionSubsystem {
         //   Set intake motor speed to the negative of the intake level
         // ELSE IF outtake level GREATER THAN 0 THEN
         //   Set the intake motor speed to the outtake trigger level
-        
-        // NATE Uncomment and complete the code:
         
         if ( intakeTriggerLevel > 0 )  {
             intakeMotorSpeed = -intakeTriggerLevel;            
