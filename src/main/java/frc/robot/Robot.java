@@ -128,7 +128,7 @@ public class Robot extends TimedRobot {
             driveForward(grabBallsDistance);
             intake.set(0);
             intakeUp();
-            timer.delay(10);
+            Timer.delay(10);
         } else if (autonomousMode.equals("grab and score")){
             driveForward(86.63);
             intakeDown();
