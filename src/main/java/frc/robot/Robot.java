@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
         if (autonomousMode.equals("score")) {
             driveForward(32);
             intake.set(1);   
-            timer.delay(.5);
+            Timer.delay(.5);
             intake.set(0);
             driveBack(0); 
         } else if (autonomousMode.equals("grab")) {
