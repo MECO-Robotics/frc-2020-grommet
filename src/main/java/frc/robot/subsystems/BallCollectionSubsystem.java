@@ -133,13 +133,13 @@ public class BallCollectionSubsystem {
         //   Set the intake motor speed to the outtake trigger level
         
         // NATE Uncomment and complete the code:
-        /*
-        if ( ???? > 0 )  {
-            intakeMotorSpeed = ?????;            
-        } else if ( ???? > 0 ) {
-            ????? = outTakeTriggerLevel;
+        
+        if ( intakeTriggerLevel > 0 )  {
+            intakeMotorSpeed = -intakeTriggerLevel;            
+        } else if ( outTakeTriggerLevel > 0 ) {
+            intakeMotorSpeed = outTakeTriggerLevel;
         }
-        */
+        
         
         return intakeMotorSpeed;
     }
