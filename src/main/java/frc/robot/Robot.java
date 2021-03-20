@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
             turnRight(344.661);
             driveForward(367.461);
             intake.set(-.5);
-            timer.delay(.5);
+            Timer.delay(.5);
             intake.set(0);
         }
         
