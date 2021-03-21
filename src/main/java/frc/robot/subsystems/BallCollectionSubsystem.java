@@ -45,7 +45,7 @@ public class BallCollectionSubsystem {
     private double computeArmMotorSpeedFromTime(double t) {
         double m = 0.0;
         
-        // NATE: Finish the statement to compute x using the polynomial:
+        // TODO: NATE - Finish the statement to compute x using the polynomial:
         //            m = -7t^2 + 4t + 0.3
         //
         // m = ?????????  ;
