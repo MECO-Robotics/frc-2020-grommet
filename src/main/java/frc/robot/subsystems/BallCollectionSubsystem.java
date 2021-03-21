@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Map;
 import java.lang.Math;
 
+
 /**
  * Motor computation class for the Ball Collection subsystems
  * 
@@ -39,7 +40,18 @@ public class BallCollectionSubsystem {
 
     public BallCollectionSubsystem() {
     }
+
     
+    private double computeArmMotorSpeedFromTime(double t) {
+        double m = 0.0;
+        
+        // NATE: Finish the statement to compute x using the polynomial:
+        //            m = -7t^2 + 4t + 0.3
+        //
+        // m = ?????????  ;
+        
+        return m;
+    }
     /**
      * Determine the arm motor speed given the game pad inputs. Only one button should 
      * be pressed at a time, but the condition is possible, so it needs to be
