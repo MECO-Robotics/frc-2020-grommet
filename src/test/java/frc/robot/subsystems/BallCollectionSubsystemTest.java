@@ -29,7 +29,7 @@ public class BallCollectionSubsystemTest {
                 top[i],       // top limit switch
                 btm[i]);      // bottom limit switch
             String msg = String.format("\nERROR: Iteration %d\n", i);
-            org.junit.Assert.assertEquals(msg, spd[i], actualSpeed, 0.001);
+            Assert.assertEquals(msg, spd[i], actualSpeed, 0.001);
         }
     }
 }
