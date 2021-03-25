@@ -20,20 +20,22 @@ public class BallCollectionSubsystem {
     double currentArmMotorSpeed = 0.0;
     
     // Speed to use when slowing 
-    private double ARM_MOTOR_SLOW_SPEED = 0.1;
+    private static final double ARM_MOTOR_MIN_SPEED = 0.1;
     
      // Speed to use when slowing 
-     private double ARM_MOTOR_FAST_SPEED = 0.5;
+     private static final double ARM_MOTOR_MAX_SPEED = 0.5;
+
+    // The a, b, and c coeeficients of the 2nd order polynomial equation that
+    // computes motor speed based on time.
+    private double speedEquationA = -7.0;
+    private double speedEquationB = 4.0;
+    private double speedEquationC = 0.3;
 
     // Number of seconds it took to last raise the arm
     private double lastTimeToRaiseArm = 0.7;
 
     // Number of seconds it took to last lower the arm
     private double lastTimeToLowerArm = 0.7;
-
-    // What fraction of the time spent to raise or lower should be
-    // done at high speed vs. low speed
-    private static double HI_TO_LOW_ARM_SPEED_RATIO = 0.9;
 
     // Timer to track the time spent raising or lowering
     private Timer armTimer = new Timer();
@@ -50,6 +52,10 @@ public class BallCollectionSubsystem {
         //
         // m = ?????????  ;
         
+
+        // TODO: NATE - STEP 2: Change the coefficients of the polynomial equation to use
+        //       the constants defined on this class
+
         return m;
     }
     /**
