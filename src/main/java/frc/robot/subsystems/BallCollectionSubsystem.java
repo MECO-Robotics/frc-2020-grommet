@@ -47,7 +47,7 @@ public class BallCollectionSubsystem {
     private double computeArmMotorSpeedFromTime(double t) {
         double m = 0.0;
         
-        m = -7 * t * t  +  4 * t  +  0.3  ;
+        m = speedEquationA * t * t  +  speedEquationB * t  +  speedEquationC  ;
         
         // TODO: NATE - STEP 2: Change the coefficients of the polynomial equation to use
         //       the constants defined on this class
