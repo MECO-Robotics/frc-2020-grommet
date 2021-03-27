@@ -66,6 +66,9 @@ public class Robot extends TimedRobot {
     SendableChooser<String> codeSelector;           // List of code versions available
     String selectedCodeVersion;                     // Current version selected at drivers station
 
+    AutonomousRoutine autoRoutineA = new AutonomousRoutine("A");
+    AutonomousRoutine autoRoutineB = new AutonomousRoutine("B");
+    
     
     /**
      * This function is run when the robot is first started up and should be
@@ -157,6 +160,8 @@ public class Robot extends TimedRobot {
         selectedCodeVersion = codeSelector.getSelected();
         armLift.set(0);
         intake.set(0);
+
+        autoRoutineA.startRecording();
     }
 
     
@@ -165,6 +170,9 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void disabledPeriodic() {
+        
+        autoRoutineA.stopRecording();
+
         //System.out.println("Left encoder: " + driveSubsystem.leftEncoder.getDistance());
         //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
     }

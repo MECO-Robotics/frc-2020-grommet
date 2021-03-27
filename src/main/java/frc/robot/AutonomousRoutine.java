@@ -1,57 +1,108 @@
 package frc.robot;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
+
 /**
  * Stores an autonomous program the robot can execute.
  */
 public class AutonomousRoutine {
 
+    public enum ArmStatus {
+        DOWN,
+        UP,
+        GOING_UP,
+        GOING_DOWN
+    }
+
+    public enum RollerStatus {
+        STOPPED,
+        COLLECTING,
+        EJECTING
+    }
+
+    /**
+     * This inner class is used to pack and unpack 4 values into a single value
+     */
+    private class Record {
+        // Downcast to save space. Timer is in seconds, and 4 significant digits of precision should be more than enough
+        // a float provides 7 significant digits
+        public float time;
+        public int left; 
+        public int right;
+        public ArmStatus arm; 
+        public RollerStatus roller;
+    }
+    
+    
+    // 5 minute program! Each entry is worth 20ms.
     private static int MAX_ENTRIES = 15000;
     
-    // Program storage. An entry is recorded every 20ms. Each entry is 4 bytes
+    // Program storage. An entry is recorded every 20ms. Each entry is:
+    //  - 4 bytes for the float program time.
+    //  - 4 bytes for the pointer reference 
+    //  - 16 bytes for the Record object (4 ints)
+    // TOTAL: 24 bytes
     // So, 50 entries = 1 second
     //     3,000 entries = 1 minute
-    //     15,000 entries = 5 minutes = 60,000 bytes ~ 58K
-    int[] program = new int[MAX_ENTRIES];
-    
-    // Reuse the same record for packing/unpacking so we prevent
-    // GC from running
-    Record record = new Record();
+    //     15,000 entries = 5 minutes = 120,000 bytes = 352K
+
+    Record[] program = new Record[MAX_ENTRIES];
     
     // The position in the program where the next step will be recorded or played back
     int index = 0;
     
     int programLength = 0;
+
+    Timer programTimer = new Timer();
         
-    public AutonomousRoutine() {
+    String programName;
+
+    public AutonomousRoutine(String programName) {
+        this.programName = programName;
     }
-    
-    private class Record {
-        public int left;         // bits 20 .. 32 (13 bits)
-        public int right;        // bits  7 .. 19 (13 bits)
-        public int arm;          // bit 3,4 - 0:down, 1:going up, 2:going down, 3:up
-        public int roller;       // bit 1,2 - 0:stopped, 1:in, 2:out
-        
-        public int pack() {
-            return (left << 19) | 
-                (right << 6) | 
-                (arm << 2) | 
-                roller;
-        }
-        
-        public void unpack(int packed) {
-            this.left = (packed >> 19) & 0x1fff;
-            this.right = (packed >>  6) & 0x1fff;
-            this.arm = (packed >> 2) & 0x3;
-            this.roller = (packed & 0x3);
-        }
-    }
-    
     
     /**************** Teleop Record Methods **************/
     
     public void startRecording() {
         index = 0;
         programLength = 0;
+        programTimer.reset();
+        programTimer.start();
+    }
+
+    public void stopRecording() {
+        index = 0;
+        programTimer.stop();
+
+        if (programLength > 0) {
+            String fileName = Filesystem.getLaunchDirectory().getAbsolutePath() + "/auto-" + programName + ".csv";
+
+            try {
+                FileWriter myWriter = new FileWriter(fileName);
+                myWriter.write("Time,Left,Right,Arm,Roller\n");
+                for(int i=0; i<programLength; i++) {
+                    myWriter.write(
+                        String.format(
+                            "%3.3f,%d,%d,%s,%s\n", 
+                            program[i].time, 
+                            program[i].left, 
+                            program[i].right, 
+                            program[i].arm.name(), 
+                            program[i].roller.name()));
+                }
+                myWriter.flush();
+                myWriter.close();
+                System.out.println("Successfully wrote " + fileName);
+            } catch (IOException e) {
+                System.out.println("An error occurred writing file " + fileName);
+                e.printStackTrace();
+            }
+        }
     }
     
     /**
@@ -60,16 +111,15 @@ public class AutonomousRoutine {
     public void recordState(
         int leftMotorPosition, 
         int rightMotorPosition, 
-        int arm, 
-        int roller) {
+        ArmStatus arm, 
+        RollerStatus roller) {
         
         if(index < MAX_ENTRIES) {
-            record.left = leftMotorPosition; 
-            record.right = rightMotorPosition;
-            record.arm = arm;
-            record.roller = roller;
-
-            program[index] = record.pack();
+            program[index].time = (float)programTimer.get();
+            program[index].left = leftMotorPosition; 
+            program[index].right = rightMotorPosition;
+            program[index].arm = arm;
+            program[index].roller = roller;
 
             index++;
             programLength++;
@@ -83,30 +133,28 @@ public class AutonomousRoutine {
         index = 0;
     }
     
-    public void next(){
+    public boolean next(){
         index++;
-        if(index<programLength){
-            record.unpack(program[index]);
-        }
-    }
-    
-    public boolean isComplete() {
         return index < programLength;
     }
     
+    public double getTime() {
+        return program[index].time;
+    }
+
     public int getLeftMotor() {
-        return record.left;
+        return program[index].left;
     }
     
     public int getRightMotor() {
-        return record.right;
+        return program[index].right;
     }
     
-    public int getBallCollectionArm() {
-        return record.arm;
+    public ArmStatus getBallCollectionArm() {
+        return program[index].arm;
     }
     
-    public int getBallCollectionIntakeRoller() {
-        return record.roller;
+    public RollerStatus getBallCollectionIntakeRoller() {
+        return program[index].roller;
     }
 }
