@@ -64,6 +64,9 @@ public class AutonomousRoutine {
 
     public AutonomousRoutine(String programName) {
         this.programName = programName;
+        for(int i=0; i<MAX_ENTRIES; i++) {
+            program[i] = new Record();
+        }
     }
     
     /**************** Teleop Record Methods **************/
