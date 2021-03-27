@@ -57,6 +57,7 @@ public class BallCollectionSubsystem {
 
         return m;
     }
+
     /**
      * Determine the arm motor speed given the game pad inputs. Only one button should 
      * be pressed at a time, but the condition is possible, so it needs to be
@@ -93,7 +94,12 @@ public class BallCollectionSubsystem {
                 armTimer.reset();
                 armTimer.start();
 
+                System.out.println("COLLECTION ARM: Up button pressed. Moving up");
+
             } else if(topLimitSwitch == false) {
+
+                System.out.printf("COLLECTION ARM: Upper limit reached in %.3f seconds. Speed was %f. Now stopped.\n", armTimer.get(), currentArmMotorSpeed);
+
                 // We're at the top, but the user pressed the button, so just 
                 // make sure the motor is off (already should be)
                 currentArmMotorSpeed = 0;
@@ -115,7 +121,13 @@ public class BallCollectionSubsystem {
                 // track when we started moving
                 armTimer.reset();
                 armTimer.start();
+
+                System.out.println("COLLECTION ARM: Down button pressed. Moving up");
+
             } else if (bottomLimitSwich == false) {
+
+                System.out.printf("COLLECTION ARM: Down limit reached in %.3f seconds. Speed was %f. Now stopped.\n", armTimer.get(), currentArmMotorSpeed);
+
                 // We're at the bottom, but the user pressed the down button, so just
                 // make sure the motor is off (already should be)
                 currentArmMotorSpeed = 0;
@@ -144,13 +156,14 @@ public class BallCollectionSubsystem {
 
         else if ( currentArmMotorSpeed > 0.0) {
             if ( topLimitSwitch == false) {
+                System.out.printf("COLLECTION ARM: Upper limit reached in %.3f seconds. Speed was %f. Now stopped.\n", armTimer.get(), currentArmMotorSpeed);
                 currentArmMotorSpeed = 0.0;
             } else {
                 // We're moving up, but haven't hit the limit switch yet. If we've traveled for 
                 // 0.7 seconds, move the remaining distance to the limit switch very slowly
                 if (armTimer.hasElapsed(0.7)) {
                     currentArmMotorSpeed = 0.1;
-                    armTimer.stop();
+                    System.out.printf("COLLECTION ARM: %.3f seconds elapsed while raising arm. Switching to slow speed. \n", armTimer.get());
                 }
             }
         }
@@ -161,13 +174,14 @@ public class BallCollectionSubsystem {
 
         else if (currentArmMotorSpeed < 0) {
             if (bottomLimitSwich == false) {
+                System.out.printf("COLLECTION ARM: Down limit reached in %.3f seconds. Speed was %f. Now stopped.\n", armTimer.get(), currentArmMotorSpeed);
                 currentArmMotorSpeed = 0.0;
             } else {
                 // We're moving down, but haven't hit the limit switch yet. If we've traveled for 
                 // 0.7 seconds, move the remaining distance to the limit switch very slowly
                 if (armTimer.hasElapsed(0.7)) {
+                    System.out.printf("COLLECTION ARM: %.3f seconds elapsed while lowering arm. Switching to slow speed. \n", armTimer.get());
                     currentArmMotorSpeed = -0.1;
-                    armTimer.stop();
                 }
             }
         }
