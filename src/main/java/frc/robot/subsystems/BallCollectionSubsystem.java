@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Map;
 import java.lang.Math;
 
+
 /**
  * Motor computation class for the Ball Collection subsystems
  * 
@@ -19,10 +20,16 @@ public class BallCollectionSubsystem {
     double currentArmMotorSpeed = 0.0;
     
     // Speed to use when slowing 
-    private double ARM_MOTOR_SLOW_SPEED = 0.1;
+    private static final double ARM_MOTOR_MIN_SPEED = 0.1;
     
      // Speed to use when slowing 
-     private double ARM_MOTOR_FAST_SPEED = 0.5;
+    private static final double ARM_MOTOR_MAX_SPEED = 0.5;
+
+    // The a, b, and c coeeficients of the 2nd order polynomial equation that
+    // computes motor speed based on time.
+    private double speedEquationA = -7.0;
+    private double speedEquationB = 4.0;
+    private double speedEquationC = 0.3;
 
     // Number of seconds it took to last raise the arm
     private double lastTimeToRaiseArm = 0.7;
@@ -30,16 +37,23 @@ public class BallCollectionSubsystem {
     // Number of seconds it took to last lower the arm
     private double lastTimeToLowerArm = 0.7;
 
-    // What fraction of the time spent to raise or lower should be
-    // done at high speed vs. low speed
-    private static double HI_TO_LOW_ARM_SPEED_RATIO = 0.9;
-
     // Timer to track the time spent raising or lowering
     private Timer armTimer = new Timer();
 
     public BallCollectionSubsystem() {
     }
+
     
+    private double computeArmMotorSpeedFromTime(double t) {
+        double m = 0.0;
+        
+        m = speedEquationA * t * t  +  speedEquationB * t  +  speedEquationC  ;
+        
+        // TODO: NATE - STEP 2: Change the coefficients of the polynomial equation to use
+        //       the constants defined on this class
+
+        return m;
+    }
     /**
      * Determine the arm motor speed given the game pad inputs. Only one button should 
      * be pressed at a time, but the condition is possible, so it needs to be
@@ -62,16 +76,24 @@ public class BallCollectionSubsystem {
                    
         
         // IF up button pressed THEN
-        //   IF up limit NOT reached THEN
+        //   IF up limit NOT reached AND the motor is moving down or is stopped THEN
         //     Set motor speed to 0.5
-        //   ELSE
+        //   ELSE IF up limit switch reached
         //     Set motor speed to 0
         
         if (upButton == true) {
-            if (topLimitSwitch == true) {
-                 currentArmMotorSpeed = 0.5;
-            } else {
-                 currentArmMotorSpeed = 0;
+            if (topLimitSwitch == true && currentArmMotorSpeed <= 0.0 ) {
+                // start moving up
+                currentArmMotorSpeed = 0.5;
+
+                // track when we started moving
+                armTimer.reset();
+                armTimer.start();
+
+            } else if(topLimitSwitch == false) {
+                // We're at the top, but the user pressed the button, so just 
+                // make sure the motor is off (already should be)
+                currentArmMotorSpeed = 0;
             }
         }
 
@@ -83,9 +105,16 @@ public class BallCollectionSubsystem {
         
        
         else if (downButton == true  ) {
-            if ( bottomLimitSwich == true ) {
+            if ( bottomLimitSwich == true && currentArmMotorSpeed >= 0.0 ) {
+                // start moving down
                 currentArmMotorSpeed = -0.5;
-            } else {
+
+                // track when we started moving
+                armTimer.reset();
+                armTimer.start();
+            } else if (bottomLimitSwich == false) {
+                // We're at the bottom, but the user pressed the down button, so just
+                // make sure the motor is off (already should be)
                 currentArmMotorSpeed = 0;
             }
         }
@@ -106,14 +135,20 @@ public class BallCollectionSubsystem {
             }
         }
         
-        
-        // ELSE IF motor speed IS GREATER THAN 0.0 THEN
+        // ELSE IF the arm is moving up and the user hasn't pressed any buttons THEN
         //   IF up limit switch reached THEN
         //     Set set motor speed to 0
 
         else if ( currentArmMotorSpeed > 0.0) {
             if ( topLimitSwitch == false) {
                 currentArmMotorSpeed = 0.0;
+            } else {
+                // We're moving up, but haven't hit the limit switch yet. If we've traveled for 
+                // 0.7 seconds, move the remaining distance to the limit switch very slowly
+                if (armTimer.hasElapsed(0.7)) {
+                    currentArmMotorSpeed = 0.1;
+                    armTimer.stop();
+                }
             }
         }
         
@@ -124,7 +159,14 @@ public class BallCollectionSubsystem {
         else if (currentArmMotorSpeed < 0) {
             if (bottomLimitSwich == false) {
                 currentArmMotorSpeed = 0.0;
-            }    
+            } else {
+                // We're moving down, but haven't hit the limit switch yet. If we've traveled for 
+                // 0.7 seconds, move the remaining distance to the limit switch very slowly
+                if (armTimer.hasElapsed(0.7)) {
+                    currentArmMotorSpeed = -0.1;
+                    armTimer.stop();
+                }
+            }
         }
         
         return currentArmMotorSpeed;
@@ -149,7 +191,6 @@ public class BallCollectionSubsystem {
         } else if ( outTakeTriggerLevel > 0 ) {
             intakeMotorSpeed = outTakeTriggerLevel;
         }
-        
         
         return intakeMotorSpeed;
     }
