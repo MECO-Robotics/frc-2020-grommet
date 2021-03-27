@@ -164,15 +164,20 @@ public class Robot extends TimedRobot {
         autoRoutineA.startRecording();
     }
 
-    
+    /**
+     * initialization code which will be called each time the robot enters disabled mode.
+     */
+    @Override
+    public void disabledInit() {
+        autoRoutineA.stopRecording();
+    }
+
     /** 
-     * This function is called when leaving any mode, such as ending teleop and switching to autonomous.
+     * This function is called periodically while the robot is disabled
      */
     @Override
     public void disabledPeriodic() {
         
-        autoRoutineA.stopRecording();
-
         //System.out.println("Left encoder: " + driveSubsystem.leftEncoder.getDistance());
         //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
     }
@@ -311,6 +316,11 @@ public class Robot extends TimedRobot {
         
         intake.setSpeed(intakeMotorSpeed);
         
+        autoRoutineA.recordState(
+            driveSubsystem.getLeftEncoderValue(), 
+            driveSubsystem.getRightEncoderValue(), 
+            AutonomousRoutine.ArmStatus.DOWN,           // todo: Get from ball collection subsys
+            AutonomousRoutine.RollerStatus.STOPPED);
         
         updateTelemetry();  
     }

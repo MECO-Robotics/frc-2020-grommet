@@ -43,6 +43,9 @@ public class BallCollectionSubsystem {
     public BallCollectionSubsystem() {
     }
 
+    public double getCurrentArmMotorSpeed() {
+        return currentArmMotorSpeed;
+    }
     
     private double computeArmMotorSpeedFromTime(double t) {
         double m = 0.0;
