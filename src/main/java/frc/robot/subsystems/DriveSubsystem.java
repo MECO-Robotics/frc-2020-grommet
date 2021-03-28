@@ -8,6 +8,8 @@ import frc.robot.Map;
 public class DriveSubsystem {
 
     SpeedControllerGroup leftMotors, rightMotors;
+    
+    // TODO: Encapsulate encoders.
     public Encoder leftEncoder, rightEncoder;
 
     int ticksPerRev = 360;
@@ -42,5 +44,13 @@ public class DriveSubsystem {
     public void arcadeDrive(double y, double x) {
         leftMotors.set(y - x);
         rightMotors.set(y + x);
+    }
+    
+    public int getLeftEncoderValue() {
+        return leftEncoder.getRaw();
+    }
+    
+    public int getRightEncoderValue() {
+        return rightEncoder.getRaw();
     }
 }
