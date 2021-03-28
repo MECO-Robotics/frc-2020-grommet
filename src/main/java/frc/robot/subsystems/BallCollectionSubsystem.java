@@ -191,7 +191,7 @@ public class BallCollectionSubsystem {
         } else if ( outTakeTriggerLevel > 0 ) {
             intakeMotorSpeed = outTakeTriggerLevel;
         }
-        
+        //chmimkin rules
         return intakeMotorSpeed;
     }
     
