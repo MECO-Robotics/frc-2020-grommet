@@ -161,6 +161,7 @@ public class Robot extends TimedRobot {
         armLift.set(0);
         intake.set(0);
 
+        driveSubsystem.resetEncoders();
         autoRoutineA.startRecording();
     }
 
@@ -333,7 +334,18 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void testInit() {
+        driveSubsystem.resetEncoders();
+        driveForward(36);   // Drive forward a yard
+
+        System.out.printf("TEST: Moved forward 1 yard at 1/2 speed. Encoder ticks (L/R): %d/%d\n", 
+            driveSubsystem.getLeftEncoderValue(), 
+            driveSubsystem.getRightEncoderValue());
+
+        driveBack(36);      // Drive backward a yard
         
+        System.out.printf("TEST: Moved backward 1 yard at 1/2 speed. Encoder ticks (L/R): %d/%d\n", 
+            driveSubsystem.getLeftEncoderValue(), 
+            driveSubsystem.getRightEncoderValue());
     }
     
     /**
@@ -347,8 +359,8 @@ public class Robot extends TimedRobot {
      * Updating the telemtry
      */
     private void updateTelemetry(){
-        SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.rightEncoder.getDistance());
-        SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.leftEncoder.getDistance());
+        SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.getRightDistance());
+        SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.getLeftDistance());
     }
    
     private void intakeDown(){
@@ -364,30 +376,54 @@ public class Robot extends TimedRobot {
     }
 
     private void driveForward(double far){
-        while (driveSubsystem.leftEncoder.getDistance()<far){
+        while (driveSubsystem.getLeftDistance()<far){
             driveSubsystem.tankDrive(-.5, -.5);
         }
         driveSubsystem.tankDrive(0, 0);
     }
     
     private void turnRight(double turn){
-        while (driveSubsystem.leftEncoder.getDistance()<turn){
+        while (driveSubsystem.getLeftDistance()<turn){
             driveSubsystem.tankDrive(-1, 1);
         }
         driveSubsystem.tankDrive(0, 0);
     }
     
     private void turnLeft(double turn){
-        while (driveSubsystem.leftEncoder.getDistance()<turn){
+        while (driveSubsystem.getLeftDistance()<turn){
             driveSubsystem.tankDrive(1, -1);
         }
         driveSubsystem.tankDrive(0, 0);
     }
     
     private void driveBack(double far){
-        while (driveSubsystem.leftEncoder.getDistance()<far){
+        while (driveSubsystem.getLeftDistance()<far){
             driveSubsystem.tankDrive(1, 1);
         }
         driveSubsystem.tankDrive(0, 0);
+    }
+
+    private void updateMotors(AutonomousRoutine routine) {
+        float leftDelta = routine.getLeftMotor() - driveSubsystem.getLeftEncoderValue();
+        float rightDelta = routine.getRightMotor() - driveSubsystem.getRightEncoderValue();
+
+        double deltaT = 0.25;
+
+        // Conversion of ticks/sec to speed factor
+        double deltaToSpeedFactor = 0.2;
+
+        float leftRightRatio = 1;
+
+        if (rightDelta != 0) {
+            leftRightRatio = Math.abs(leftDelta) / Math.abs(rightDelta);
+            if(leftRightRatio > 5.0) {
+                leftRightRatio = (float)5.0;
+            } else if (leftRightRatio < 0.2) {
+                leftRightRatio = (float)0.2;
+            }
+        }
+
+        double leftSpeed = leftDelta / deltaT * deltaToSpeedFactor;
+        
     }
 }

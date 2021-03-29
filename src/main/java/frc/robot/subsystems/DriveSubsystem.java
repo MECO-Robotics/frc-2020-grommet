@@ -9,8 +9,7 @@ public class DriveSubsystem {
 
     SpeedControllerGroup leftMotors, rightMotors;
     
-    // TODO: Encapsulate encoders.
-    public Encoder leftEncoder, rightEncoder;
+    private Encoder leftEncoder, rightEncoder;
 
     int ticksPerRev = 360;
     double diameter = 6.0; // inches
@@ -52,5 +51,13 @@ public class DriveSubsystem {
     
     public int getRightEncoderValue() {
         return rightEncoder.getRaw();
+    }
+
+    public double getLeftDistance() {
+        return leftEncoder.getDistance();
+    }
+    
+    public double getRightDistance() {
+        return rightEncoder.getDistance();
     }
 }

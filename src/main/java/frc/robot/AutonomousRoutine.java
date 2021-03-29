@@ -148,11 +148,37 @@ public class AutonomousRoutine {
     public int getLeftMotor() {
         return program[index].left;
     }
+
+    /**
+     * Get the current direction of travel for the left wheel. 
+     * @return 0 if stationary, 1 if moving forward, -1 if moving backward
+     */
+    public int getLeftDirection() {
+        if (index == programLength) {
+            return 0;
+        }
+        else {
+            return Integer.compare(program[index + 1].left, program[index].left);
+        }
+    }
     
     public int getRightMotor() {
         return program[index].right;
     }
     
+    /**
+     * Get the current direction of travel for the right wheel. 
+     * @return 0 if stationary, 1 if moving forward, -1 if moving backward
+     */
+    public int getRightDirection() {
+        if (index == programLength) {
+            return 0;
+        }
+        else {
+            return Integer.compare(program[index + 1].right, program[index].right);
+        }
+    }
+
     public ArmStatus getBallCollectionArm() {
         return program[index].arm;
     }
