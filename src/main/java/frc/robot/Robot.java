@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
-import frc.robot.subsystems.BallCollectionSubsystem;
+import frc.robot.subsystems.BallCollectionSubsystemState;
 import frc.robot.subsystems.DriveSubsystem;
 
 
@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
     //
     
     DriveSubsystem driveSubsystem;
-    BallCollectionSubsystem ballCollectionSubsystem;
+    BallCollectionSubsystemState ballCollectionSubsystem;
 
     //
     // Inputs / Outputs
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
     
         driveSubsystem = new DriveSubsystem();
-        ballCollectionSubsystem = new BallCollectionSubsystem();
+        ballCollectionSubsystem = new BallCollectionSubsystemState();
 
         armLift.setInverted(false);
         bottomLimitSwitch = new DigitalInput(5);

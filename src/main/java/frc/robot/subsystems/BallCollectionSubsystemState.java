@@ -15,7 +15,7 @@ import java.lang.Math;
  * should NOT control the robot. Instead, results should all simply be
  * returned from the methods as return values.
  */
-public class BallCollectionSubsystem {
+public class BallCollectionSubsystemState {
 
     double currentArmMotorSpeed = 0.0;
     
@@ -40,7 +40,7 @@ public class BallCollectionSubsystem {
     // Timer to track the time spent raising or lowering
     private Timer armTimer = new Timer();
 
-    public BallCollectionSubsystem() {
+    public BallCollectionSubsystemState() {
     }
 
     public double getCurrentArmMotorSpeed() {

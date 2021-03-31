@@ -8,7 +8,7 @@ public class BallCollectionSubsystemTest {
     @Test
     public void testComputeArmMotorSpeed() {
         
-        BallCollectionSubsystem collector = new BallCollectionSubsystem();
+        BallCollectionSubsystemState collector = new BallCollectionSubsystemState();
         
         boolean[] up  = new boolean[] { false, true,  false, false, false, true,  false, false, false, true,  false, false };
         boolean[] dwn = new boolean[] { false, false, true,  false, false, false, true, false, false, false, true,  false };

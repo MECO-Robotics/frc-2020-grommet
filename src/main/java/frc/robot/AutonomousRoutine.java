@@ -143,26 +143,31 @@ public class AutonomousRoutine {
     }
     
     public boolean isDone() {
-        return index >= programLength;
+        return index < 0 || index >= programLength;
     }
 
     public double getTime() {
+        if(isDone()) { return 0; }
         return program[index].time;
     }
 
     public int getLeftMotor() {
+        if(isDone()) { return 0; }
         return program[index].left;
     }
 
     public int getRightMotor() {
+        if(isDone()) { return 0; }
         return program[index].right;
     }
     
     public ArmStatus getBallCollectionArm() {
+        if(isDone()) { return ArmStatus.DOWN; }
         return program[index].arm;
     }
     
     public RollerStatus getBallCollectionIntakeRoller() {
+        if(isDone()) { return RollerStatus.STOPPED; }
         return program[index].roller;
     }
 
@@ -180,8 +185,14 @@ public class AutonomousRoutine {
         int left = getLeftMotor();
         int right = getRightMotor();
 
+        boolean notDone = true;
         // Advance the routine forward 1/4 second.
-        while((getTime() - t) < 0.25 && next());
+        while((getTime() - t) < 0.25 && notDone) {
+            
+            //controlCollectionSystem();
+
+            notDone = next();
+        }
 
         double deltaT = getTime() - t;
 
