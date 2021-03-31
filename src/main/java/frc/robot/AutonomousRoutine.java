@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.IDriveSubsystem;
 
 /**
  * Stores an autonomous program the robot can execute.
@@ -141,6 +142,10 @@ public class AutonomousRoutine {
         return index < programLength;
     }
     
+    public boolean isDone() {
+        return index >= programLength;
+    }
+
     public double getTime() {
         return program[index].time;
     }
@@ -149,41 +154,88 @@ public class AutonomousRoutine {
         return program[index].left;
     }
 
-    /**
-     * Get the current direction of travel for the left wheel. 
-     * @return 0 if stationary, 1 if moving forward, -1 if moving backward
-     */
-    public int getLeftDirection() {
-        if (index == programLength) {
-            return 0;
-        }
-        else {
-            return Integer.compare(program[index + 1].left, program[index].left);
-        }
-    }
-    
     public int getRightMotor() {
         return program[index].right;
     }
     
-    /**
-     * Get the current direction of travel for the right wheel. 
-     * @return 0 if stationary, 1 if moving forward, -1 if moving backward
-     */
-    public int getRightDirection() {
-        if (index == programLength) {
-            return 0;
-        }
-        else {
-            return Integer.compare(program[index + 1].right, program[index].right);
-        }
-    }
-
     public ArmStatus getBallCollectionArm() {
         return program[index].arm;
     }
     
     public RollerStatus getBallCollectionIntakeRoller() {
         return program[index].roller;
+    }
+
+    /**
+     * Periodically, this method is called to update the robot to execute the stored routine.
+     * @param driveSubsystem
+     */
+    public void runPeriodic(IDriveSubsystem driveSubsystem) {
+
+        // Step 1: Calculate a ticks-per-second speed for each wheel based on the difference bewteen current encoder and desired encoder values
+        // Step 2: Convert ticks-per-second into a motor speed using an empircally determined, tunable conversion factor
+        // Step 3: Move in that direction until the encoders match the routine (exit method, and check on next call)
+
+        double t = getTime();
+        int left = getLeftMotor();
+        int right = getRightMotor();
+
+        // Advance the routine forward 1/4 second.
+        while((getTime() - t) < 0.25 && next());
+
+        double deltaT = getTime() - t;
+
+        if(deltaT <= 0 || isDone()) {
+            driveSubsystem.tankDrive(0, 0);
+
+            System.out.println("Autonomous Replay: Routine complete.");
+        } else {
+            
+            double deltaLeft = getLeftMotor() - left;
+            double deltaRight = getRightMotor() - right;
+            double leftSpeedEstimate = deltaLeft / deltaT / 360.0;      // Revs per second
+            double rightSpeedEstimate = deltaRight / deltaT / 360.0;    // Revs per second  abs() =~ 8.0
+            double leftMotorEstimate = leftSpeedEstimate / 8.0;
+            double rightMotorEstimate = rightSpeedEstimate / 8.0;
+
+            // How far away are we?
+            double leftDelta = getLeftMotor() - driveSubsystem.getLeftEncoderValue();
+            double rightDelta = getRightMotor() - driveSubsystem.getRightEncoderValue();
+
+            System.out.printf("Autonomous Replay: Driving to encoder pos %d/%d. Currently at %d/%d. Setting motor to %.2f/%.2f\n",
+                getLeftMotor(),
+                getRightMotor(),
+                driveSubsystem.getLeftEncoderValue(),
+                driveSubsystem.getRightEncoderValue(),
+                leftMotorEstimate,
+                rightMotorEstimate);
+
+            double leftFractionRemaining = 1, rightFractionRemaining = 1;
+            int iterations = 0;
+            // Repeat until the difference between where we are and where we're going 
+            // is only 25% left (leave to the next iteration)
+            // For a 0.25 seconds, this would be about 60 milliseconds 
+            // Also, make sure we have a break out - don't run the loop more than 100 times.
+            while(leftFractionRemaining > 0.25 && rightFractionRemaining > 0.25 && iterations++ < 100) {
+                System.out.printf("Autonomous Replay: Driving tank with %.1f/%.1f portion of the distance remaining per wheel.\n",
+                    leftFractionRemaining, rightFractionRemaining);
+                driveSubsystem.tankDrive(leftMotorEstimate, rightMotorEstimate);
+                Timer.delay(0.02);
+                leftFractionRemaining = (getLeftMotor() - driveSubsystem.getLeftEncoderValue()) / leftDelta;
+                rightFractionRemaining = (getRightMotor() - driveSubsystem.getRightEncoderValue()) / rightDelta;
+
+                if((leftFractionRemaining - rightFractionRemaining) > 0.1) {
+                    // If left is ahead of right by 10%, reduce left speed by 10%
+                    leftMotorEstimate *= 0.1;
+                    System.out.printf("Autonomous Replay: Adjusting left motor to %f\n", leftMotorEstimate);
+                } else if((rightFractionRemaining - leftFractionRemaining) > 0.1) {
+                    // If right is ahead of left by 10%, reduce right speed by 10%
+                    rightMotorEstimate *= 0.1;
+                    System.out.printf("Autonomous Replay: Adjusting right motor to %f\n", rightMotorEstimate);
+                }
+            }
+        
+            System.out.println("Autonomous Replay: Motor update complete.");
+        }
     }
 }

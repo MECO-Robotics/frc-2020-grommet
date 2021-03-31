@@ -93,7 +93,7 @@ public class Robot extends TimedRobot {
         
         SmartDashboard.putBoolean("Alternate Code", false);
         codeSelector = new SendableChooser<>();
-        codeSelector.addDefault("Default", "default");
+        codeSelector.setDefaultOption("Default", "default");
         codeSelector.addOption("Alternate", "alt");
         SmartDashboard.putData("Code Selector", codeSelector);
     }
@@ -109,6 +109,8 @@ public class Robot extends TimedRobot {
         timer.reset();
         timer.start();
         driveSubsystem.resetEncoders();
+
+        autoRoutineA.startAutonomous();
     }
 
     /**
@@ -118,6 +120,10 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
     
+        autoRoutineA.runPeriodic(driveSubsystem);
+
+        // PAUL FOSTER - COMMENTING OUT FOR NOW
+        /*
         if (autonomousMode.equals("score")) {
             driveForward(32);
             intake.set(1);   
@@ -148,7 +154,7 @@ public class Robot extends TimedRobot {
             timer.delay(.5);
             intake.set(0);
         }
-        
+        */
         updateTelemetry();
     }
 
@@ -192,14 +198,14 @@ public class Robot extends TimedRobot {
         if(selectedCodeVersion.equals("default")) {
             teleopPeriodicDefault();
         } else if(selectedCodeVersion.equals("alt")) {
-            teleopPeriodicAlternate();
+            teleopPeriodicLegacy();
         }
     }
     
     /**
-     * Default code version for teleopPeriodic
+     * Alternate, legacy code version for teleopPeriodic
      */
-    private void teleopPeriodicDefault() {
+    private void teleopPeriodicLegacy() {
         double rightTrigger1 = Utils.deadzone(pilotStick.getRawAxis(3), 0.1);
         double rightTrigger2 = Utils.deadzone(copilotStick.getRawAxis(3), 0.1);
         double leftTrigger1 = Utils.deadzone(pilotStick.getRawAxis(2), 0.1);
@@ -249,9 +255,9 @@ public class Robot extends TimedRobot {
     }
 
     /**
-     * Alternate code version for teleopPeriodic
+     * Default code version for teleopPeriodic
      */
-    private void teleopPeriodicAlternate() {
+    private void teleopPeriodicDefault() {
         
         // Pilot controls
         double pilotRightTrigger = Utils.deadzone(pilotStick.getRawAxis(3), 0.1);
@@ -403,27 +409,4 @@ public class Robot extends TimedRobot {
         driveSubsystem.tankDrive(0, 0);
     }
 
-    private void updateMotors(AutonomousRoutine routine) {
-        float leftDelta = routine.getLeftMotor() - driveSubsystem.getLeftEncoderValue();
-        float rightDelta = routine.getRightMotor() - driveSubsystem.getRightEncoderValue();
-
-        double deltaT = 0.25;
-
-        // Conversion of ticks/sec to speed factor
-        double deltaToSpeedFactor = 0.2;
-
-        float leftRightRatio = 1;
-
-        if (rightDelta != 0) {
-            leftRightRatio = Math.abs(leftDelta) / Math.abs(rightDelta);
-            if(leftRightRatio > 5.0) {
-                leftRightRatio = (float)5.0;
-            } else if (leftRightRatio < 0.2) {
-                leftRightRatio = (float)0.2;
-            }
-        }
-
-        double leftSpeed = leftDelta / deltaT * deltaToSpeedFactor;
-        
-    }
 }

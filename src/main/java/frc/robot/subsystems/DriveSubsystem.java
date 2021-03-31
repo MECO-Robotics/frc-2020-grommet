@@ -4,8 +4,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import frc.robot.Map;
+import frc.robot.IDriveSubsystem;
 
-public class DriveSubsystem {
+public class DriveSubsystem implements IDriveSubsystem {
 
     SpeedControllerGroup leftMotors, rightMotors;
     
@@ -41,6 +42,10 @@ public class DriveSubsystem {
     }
 
     public void arcadeDrive(double y, double x) {
+
+        if(Math.abs(y - x) > 1.0 || Math.abs(y + x) > 1.0) {
+            System.out.printf("ERROR: motor inputs for arcade drive out of range. x:%f, y:%f\n", x, y);
+        }
         leftMotors.set(y - x);
         rightMotors.set(y + x);
     }

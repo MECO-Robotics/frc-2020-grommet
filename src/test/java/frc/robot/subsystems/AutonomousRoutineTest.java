@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.AutonomousRoutine;
+import frc.robot.IDriveSubsystem;
 
 public class AutonomousRoutineTest {
     
@@ -46,32 +47,62 @@ public class AutonomousRoutineTest {
         Assert.assertFalse(routine.next());
     }
 
+    private class StubDriveSubsystem implements IDriveSubsystem {
+
+        int leftEnc, rightEnc;
+        double leftMotor, rightMotor;
+
+        @Override
+        public int getLeftEncoderValue() {
+            return leftEnc;
+        }
+
+        @Override
+        public int getRightEncoderValue() {
+            return rightEnc;
+        }
+
+        @Override
+        public void tankDrive(double left, double right) {
+            leftEnc += left * 100.0;
+            rightEnc += right * 100.0;
+        }
+    }
+
     @Test
-    public void testGetLeftDirection() {
+    public void testRunPeriodic() {
+
+        IDriveSubsystem stubDriveSubsystem = new StubDriveSubsystem();
 
         AutonomousRoutine routine = new AutonomousRoutine("bob");
         routine.startRecording();
-        routine.recordState(1, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 0
-        routine.recordState(2, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 1
-        routine.recordState(4, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 2
-        routine.recordState(8, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 3
-        routine.recordState(7, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 4
-        routine.recordState(7, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 5
-        routine.recordState(2, 1, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 6
+
+        // Flat spin clockwise for 0.8 seconds at max speed
+        // Max speed is about 3000 ticks per second or about 300 ticks every 0.1 seconds
+        // The runPeriodic method computes motor speed for a 0.25 seconds worth of the program then exits
+        routine.recordState(0, 0, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 0
+        Timer.delay(0.1);
+        routine.recordState(300, -300, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 1
+        Timer.delay(0.1);
+        routine.recordState(300, -300, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 2
+        Timer.delay(0.1);
+        routine.recordState(300, -300, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 3
+        Timer.delay(0.1);
+        routine.recordState(300, -300, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 4
+        Timer.delay(0.1);
+        routine.recordState(300, -300, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 5
+        Timer.delay(0.1);
+        routine.recordState(300, -300, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 6
+        Timer.delay(0.1);
+        routine.recordState(0, 0, AutonomousRoutine.ArmStatus.GOING_DOWN, AutonomousRoutine.RollerStatus.COLLECTING); // 7
+        Timer.delay(0.1);
         routine.stopRecording();
 
         routine.startAutonomous();
 
-        // Should be pointing at the first recorded record
-        Assert.assertEquals(1, routine.getLeftDirection());  // 0 .. 1
-        routine.next();
-        Assert.assertEquals(1, routine.getLeftDirection()); // 1 .. 2
-        routine.next();
-        Assert.assertEquals(1, routine.getLeftDirection()); // 2 .. 3
-        routine.next();
-        Assert.assertEquals(-1, routine.getLeftDirection()); // 3 .. 4
-        routine.next();
-        Assert.assertEquals(0, routine.getLeftDirection()); // 4 .. 5
-        
+        routine.runPeriodic(stubDriveSubsystem);
+        routine.runPeriodic(stubDriveSubsystem);
+        routine.runPeriodic(stubDriveSubsystem);
+        routine.runPeriodic(stubDriveSubsystem);
     }
 }
