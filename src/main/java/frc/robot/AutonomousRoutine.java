@@ -195,8 +195,8 @@ public class AutonomousRoutine {
             double deltaRight = getRightMotor() - right;
             double leftSpeedEstimate = deltaLeft / deltaT / 360.0;      // Revs per second
             double rightSpeedEstimate = deltaRight / deltaT / 360.0;    // Revs per second  abs() =~ 8.0
-            double leftMotorEstimate = leftSpeedEstimate / 8.0;
-            double rightMotorEstimate = rightSpeedEstimate / 8.0;
+            double leftMotorEstimate = leftSpeedEstimate / 16.0;
+            double rightMotorEstimate = rightSpeedEstimate / 16.0;
 
             // How far away are we?
             double leftDelta = getLeftMotor() - driveSubsystem.getLeftEncoderValue();
@@ -219,7 +219,7 @@ public class AutonomousRoutine {
             while(leftFractionRemaining > 0.25 && rightFractionRemaining > 0.25 && iterations++ < 100) {
                 System.out.printf("Autonomous Replay: Driving tank with %.1f/%.1f portion of the distance remaining per wheel.\n",
                     leftFractionRemaining, rightFractionRemaining);
-                driveSubsystem.tankDrive(leftMotorEstimate, rightMotorEstimate);
+                driveSubsystem.tankDrive(-leftMotorEstimate, -rightMotorEstimate);
                 Timer.delay(0.02);
                 leftFractionRemaining = (getLeftMotor() - driveSubsystem.getLeftEncoderValue()) / leftDelta;
                 rightFractionRemaining = (getRightMotor() - driveSubsystem.getRightEncoderValue()) / rightDelta;
