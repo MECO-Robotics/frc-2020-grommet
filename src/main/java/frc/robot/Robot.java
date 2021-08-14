@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Victor;
 import frc.robot.subsystems.BallCollectionSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -30,59 +29,59 @@ public class Robot extends TimedRobot {
     //
     // Subsystems
     //
-    
+
     DriveSubsystem driveSubsystem;
     BallCollectionSubsystem ballCollectionSubsystem;
 
     //
     // Inputs / Outputs
     //
-    
+
     Victor armLift = new Victor(Map.ARM_LIFT);
     Victor liftExtender = new Victor(Map.LIFT_EXTENDER);
     Victor intake = new Victor(Map.INTAKE);
-    DigitalInput bottomLimitSwitch,topLimitSwitch;
+    DigitalInput bottomLimitSwitch, topLimitSwitch;
     private final Joystick pilotStick = new Joystick(0);
     private final Joystick copilotStick = new Joystick(1);
 
     //
     // Autonomous
     //
-    
-    SendableChooser<String> autoSelector;           // List of autonomous modes
-    String autonomousMode;                          // Current mode selected at drivers station
+
+    SendableChooser<String> autoSelector; // List of autonomous modes
+    String autonomousMode; // Current mode selected at drivers station
     double rightAngle = 59.28185337;
     double turnAround = 118.5637067;
     private final Timer timer = new Timer();
+    boolean cycleEnded = false;
 
     //
     // Code Version selector
-    //     The code version selector on the smart dashboard allows different
-    //     versions of the code to coexist to allow the programming team to 
-    //     test new versions of the code without having to copy a new jar
-    //     file to the robot.
+    // The code version selector on the smart dashboard allows different
+    // versions of the code to coexist to allow the programming team to
+    // test new versions of the code without having to copy a new jar
+    // file to the robot.
     //
-    
-    SendableChooser<String> codeSelector;           // List of code versions available
-    String selectedCodeVersion;                     // Current version selected at drivers station
+
+    SendableChooser<String> codeSelector; // List of code versions available
+    String selectedCodeVersion; // Current version selected at drivers station
 
     AutonomousRoutine autoRoutineA = new AutonomousRoutine("A");
     AutonomousRoutine autoRoutineB = new AutonomousRoutine("B");
-    
-    
+
     /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
+     * This function is run when the robot is first started up and should be used
+     * for any initialization code.
      */
     @Override
     public void robotInit() {
-    
+
         driveSubsystem = new DriveSubsystem();
         ballCollectionSubsystem = new BallCollectionSubsystem();
 
         armLift.setInverted(false);
         bottomLimitSwitch = new DigitalInput(5);
-        topLimitSwitch = new DigitalInput(4); 
+        topLimitSwitch = new DigitalInput(4);
 
         autoSelector = new SendableChooser<>();
         autoSelector.addOption("Grab Balls", "grab");
@@ -90,7 +89,7 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("grab and score", "grab and score");
         SmartDashboard.putData("Auto Selector", autoSelector);
         SmartDashboard.putNumber("Grab Balls Distance", 42);
-        
+
         SmartDashboard.putBoolean("Alternate Code", false);
         codeSelector = new SendableChooser<>();
         codeSelector.setDefaultOption("Default", "default");
@@ -104,7 +103,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         selectedCodeVersion = codeSelector.getSelected();
-        
+
         autonomousMode = autoSelector.getSelected();
         timer.reset();
         timer.start();
@@ -114,44 +113,54 @@ public class Robot extends TimedRobot {
     }
 
     /**
-     * This function is called periodically during autonomous.
-     * By default, called every 20ms. 
+     * This function is called periodically during autonomous. By default, called
+     * every 20ms.
      */
     @Override
     public void autonomousPeriodic() {
-    
-        if (autonomousMode.equals("score")) {
-            driveForward(32);
-            intake.set(1);   
-            Timer.delay(.5);
-            intake.set(0);
-            driveBack(0); 
-        } else if (autonomousMode.equals("grab")) {
-            double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
-            intakeDown();
-            intake.set(-1);
-            driveForward(grabBallsDistance);
-            intake.set(0);
-            intakeUp();
-            Timer.delay(10);
-        } else if (autonomousMode.equals("grab and score")){
-            driveForward(86.63);
-            intakeDown();
-            intake.set(.5);
-            driveForward(159.63);
-            intake.set(0);
-            turnRight(218.941);
-            driveForward(316.911);
-            turnLeft(257.63);
-            driveForward(285.38);
-            turnRight(344.661);
-            driveForward(367.461);
-            intake.set(-.5);
-            Timer.delay(.5);
-            intake.set(0);
+        if (!cycleEnded) {
+            
+         
+            if (autonomousMode.equals("score")) {
+                driveForward(32);
+                System.out.println("drive foward");
+                intake.set(1);
+                System.out.println("intake set");
+                Timer.delay(.5);
+                System.out.println("timer delay");
+                intake.set(0);
+                System.out.println("intake set");
+                // driveBack(0);
+                cycleEnded = true;
+            } else if (autonomousMode.equals("grab")) {
+                double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
+                intakeDown();
+                intake.set(-1);
+                driveForward(grabBallsDistance);
+                intake.set(0);
+                intakeUp();
+                Timer.delay(10);
+                cycleEnded = true;
+            } else if (autonomousMode.equals("grab and score")) {
+                driveForward(86.63);
+                intakeDown();
+                intake.set(.5);
+                driveForward(159.63);
+                intake.set(0);
+                turnRight(218.941);
+                driveForward(316.911);
+                turnLeft(257.63);
+                driveForward(285.38);
+                turnRight(344.661);
+                driveForward(367.461);
+                intake.set(-.5);
+                Timer.delay(.5);
+                intake.set(0);
+                cycleEnded = true;
+            }
+
+            updateTelemetry();
         }
-        
-        updateTelemetry();
     }
 
     /**
@@ -168,36 +177,38 @@ public class Robot extends TimedRobot {
     }
 
     /**
-     * initialization code which will be called each time the robot enters disabled mode.
+     * initialization code which will be called each time the robot enters disabled
+     * mode.
      */
     @Override
     public void disabledInit() {
         autoRoutineA.stopRecording();
     }
 
-    /** 
+    /**
      * This function is called periodically while the robot is disabled
      */
     @Override
     public void disabledPeriodic() {
-        
-        //System.out.println("Left encoder: " + driveSubsystem.leftEncoder.getDistance());
-        //System.out.println("Right encoder: " + driveSubsystem.rightEncoder.getDistance());
+
+        // System.out.println("Left encoder: " +
+        // driveSubsystem.leftEncoder.getDistance());
+        // System.out.println("Right encoder: " +
+        // driveSubsystem.rightEncoder.getDistance());
     }
 
     /**
-     * Called periodically during teleop mode.
-     * By default, called every 20ms. 
+     * Called periodically during teleop mode. By default, called every 20ms.
      */
     @Override
     public void teleopPeriodic() {
-        if(selectedCodeVersion.equals("default")) {
+        if (selectedCodeVersion.equals("default")) {
             teleopPeriodicDefault();
-        } else if(selectedCodeVersion.equals("alt")) {
+        } else if (selectedCodeVersion.equals("alt")) {
             teleopPeriodicLegacy();
         }
     }
-    
+
     /**
      * Alternate, legacy code version for teleopPeriodic
      */
@@ -219,33 +230,31 @@ public class Robot extends TimedRobot {
         driveSubsystem.arcadeDrive(throttle, turn);
 
         if (leftTrigger1 > 0)
-          liftExtender.setSpeed(-leftTrigger1);
+            liftExtender.setSpeed(-leftTrigger1);
         else if (rightTrigger1 > 0)
-          liftExtender.setSpeed(rightTrigger1);
+            liftExtender.setSpeed(rightTrigger1);
         else
-          liftExtender.setSpeed(0);
-
+            liftExtender.setSpeed(0);
 
         if (leftTrigger2 > 0)
-          intake.setSpeed(-leftTrigger2);
+            intake.setSpeed(-leftTrigger2);
         else if (rightTrigger2 > 0)
-          intake.setSpeed(rightTrigger2);
+            intake.setSpeed(rightTrigger2);
         else
-          intake.setSpeed(0);
-
+            intake.setSpeed(0);
 
         if (yButton && topLimitSwitch.get()) {
-          intakeUp();
+            intakeUp();
         } else if (aButton && bottomLimitSwitch.get()) {
-          intakeDown();
-        } else if (bButton) {  // go up slow
-          armLift.set(.1);
+            intakeDown();
+        } else if (bButton) { // go up slow
+            armLift.set(.1);
         } else {
-          armLift.set(0);
+            armLift.set(0);
         }
 
-        if (leftBumper){
-          armLift.set(armLiftPow);
+        if (leftBumper) {
+            armLift.set(armLiftPow);
         }
         updateTelemetry();
     }
@@ -254,7 +263,7 @@ public class Robot extends TimedRobot {
      * Default code version for teleopPeriodic
      */
     private void teleopPeriodicDefault() {
-        
+
         // Pilot controls
         double pilotRightTrigger = Utils.deadzone(pilotStick.getRawAxis(3), 0.1);
         double pilotLeftTrigger = Utils.deadzone(pilotStick.getRawAxis(2), 0.1);
@@ -268,24 +277,23 @@ public class Robot extends TimedRobot {
         boolean copilotAButton = copilotStick.getRawButton(1);
         boolean copilotYButton = copilotStick.getRawButton(4);
         boolean copilotBButton = copilotStick.getRawButton(2);
-        
-        
+
         //
         // Drive Subsystem - Compute split arcade values
         //
-        // Square the stick values and restore the sign 
-        // TODO: improve this. We could be capping our throttle or turn, or not maxing out.
-        
+        // Square the stick values and restore the sign
+        // TODO: improve this. We could be capping our throttle or turn, or not maxing
+        // out.
+
         double throttle = Math.pow(pilotLeftStickY, 2) * Math.signum(pilotLeftStickY);
         double turn = Math.pow(pilotRightStickX, 2) * Math.signum(pilotRightStickX);
-        
-        driveSubsystem.arcadeDrive(throttle, turn);
 
+        driveSubsystem.arcadeDrive(throttle, turn);
 
         //
         // Lift Extendor
         //
-        
+
         if (pilotLeftTrigger > 0) {
             liftExtender.setSpeed(-pilotLeftTrigger);
         } else if (pilotRightTrigger > 0) {
@@ -294,62 +302,53 @@ public class Robot extends TimedRobot {
             liftExtender.setSpeed(0);
         }
 
-        
-        
         //
         // Ball Collection Subsystem
         //
-        
+
         // Arm
-        
-        double armMotorSpeed = ballCollectionSubsystem.computeArmMotorSpeed(
-            copilotYButton,            // up button
-            copilotAButton,            // dn button
-            copilotBButton,            // up slow button
-            topLimitSwitch.get(),      // top limit switch HAS NOT been reached (normally closed switch)
-            bottomLimitSwitch.get() ); // btm limit switch HAS NOT been reached (normally closed switch)
-        
+
+        double armMotorSpeed = ballCollectionSubsystem.computeArmMotorSpeed(copilotYButton, // up button
+                copilotAButton, // dn button
+                copilotBButton, // up slow button
+                topLimitSwitch.get(), // top limit switch HAS NOT been reached (normally closed switch)
+                bottomLimitSwitch.get()); // btm limit switch HAS NOT been reached (normally closed switch)
+
         armLift.set(armMotorSpeed);
-        
+
         // Intake roller
-        
-        double intakeMotorSpeed = ballCollectionSubsystem.computeRollerSpeed(
-            copilotLeftTrigger,        // intake level
-            copilotRightTrigger);      // outtake level
-        
+
+        double intakeMotorSpeed = ballCollectionSubsystem.computeRollerSpeed(copilotLeftTrigger, // intake level
+                copilotRightTrigger); // outtake level
+
         intake.setSpeed(intakeMotorSpeed);
-        
-        autoRoutineA.recordState(
-            driveSubsystem.getLeftEncoderValue(), 
-            driveSubsystem.getRightEncoderValue(), 
-            AutonomousRoutine.ArmStatus.DOWN,           // todo: Get from ball collection subsys
-            AutonomousRoutine.RollerStatus.STOPPED);
-        
-        updateTelemetry();  
+
+        autoRoutineA.recordState(driveSubsystem.getLeftEncoderValue(), driveSubsystem.getRightEncoderValue(),
+                AutonomousRoutine.ArmStatus.DOWN, // todo: Get from ball collection subsys
+                AutonomousRoutine.RollerStatus.STOPPED);
+
+        updateTelemetry();
     }
-    
-    
+
     /**
-     * This function is called once when entering test mode. Test mode is a special mode
-     * that can be used to perform a self-test of the robot to make sure everything is 
-     * powered on, connected, and working.
+     * This function is called once when entering test mode. Test mode is a special
+     * mode that can be used to perform a self-test of the robot to make sure
+     * everything is powered on, connected, and working.
      */
     @Override
     public void testInit() {
         driveSubsystem.resetEncoders();
-        driveForward(36);   // Drive forward a yard
+        driveForward(36); // Drive forward a yard
 
-        System.out.printf("TEST: Moved forward 1 yard at 1/2 speed. Encoder ticks (L/R): %d/%d\n", 
-            driveSubsystem.getLeftEncoderValue(), 
-            driveSubsystem.getRightEncoderValue());
+        System.out.printf("TEST: Moved forward 1 yard at 1/2 speed. Encoder ticks (L/R): %d/%d\n",
+                driveSubsystem.getLeftEncoderValue(), driveSubsystem.getRightEncoderValue());
 
-        driveBack(36);      // Drive backward a yard
-        
-        System.out.printf("TEST: Moved backward 1 yard at 1/2 speed. Encoder ticks (L/R): %d/%d\n", 
-            driveSubsystem.getLeftEncoderValue(), 
-            driveSubsystem.getRightEncoderValue());
+        driveBack(36); // Drive backward a yard
+
+        System.out.printf("TEST: Moved backward 1 yard at 1/2 speed. Encoder ticks (L/R): %d/%d\n",
+                driveSubsystem.getLeftEncoderValue(), driveSubsystem.getRightEncoderValue());
     }
-    
+
     /**
      * This function is called periodically during test mode.
      */
@@ -360,46 +359,46 @@ public class Robot extends TimedRobot {
     /**
      * Updating the telemtry
      */
-    private void updateTelemetry(){
+    private void updateTelemetry() {
         SmartDashboard.putNumber("Right Encoder Count", driveSubsystem.getRightDistance());
         SmartDashboard.putNumber("Left Encoder Count", driveSubsystem.getLeftDistance());
     }
-   
-    private void intakeDown(){
+
+    private void intakeDown() {
         armLift.set(-.5);
         timer.delay(.7);
         armLift.set(0);
     }
-   
-    private void intakeUp(){
+
+    private void intakeUp() {
         armLift.set(.5);
         timer.delay(.7);
         armLift.set(0);
     }
 
-    private void driveForward(double far){
-        while (driveSubsystem.getLeftDistance()<far){
-            driveSubsystem.tankDrive(-.5, -.5);
+    private void driveForward(double far) {
+        while (driveSubsystem.getLeftDistance() < far) {
+            driveSubsystem.tankDrive(-.25, -.25);
         }
         driveSubsystem.tankDrive(0, 0);
     }
-    
-    private void turnRight(double turn){
-        while (driveSubsystem.getLeftDistance()<turn){
+
+    private void turnRight(double turn) {
+        while (driveSubsystem.getLeftDistance() < turn) {
             driveSubsystem.tankDrive(-1, 1);
         }
         driveSubsystem.tankDrive(0, 0);
     }
-    
-    private void turnLeft(double turn){
-        while (driveSubsystem.getLeftDistance()<turn){
+
+    private void turnLeft(double turn) {
+        while (driveSubsystem.getLeftDistance() < turn) {
             driveSubsystem.tankDrive(1, -1);
         }
         driveSubsystem.tankDrive(0, 0);
     }
-    
-    private void driveBack(double far){
-        while (driveSubsystem.getLeftDistance()<far){
+
+    private void driveBack(double far) {
+        while (driveSubsystem.getLeftDistance() < far) {
             driveSubsystem.tankDrive(1, 1);
         }
         driveSubsystem.tankDrive(0, 0);
