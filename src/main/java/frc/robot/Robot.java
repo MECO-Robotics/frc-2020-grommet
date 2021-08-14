@@ -120,14 +120,10 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
     
-        autoRoutineA.runPeriodic(driveSubsystem);
-
-        // PAUL FOSTER - COMMENTING OUT FOR NOW
-        /*
         if (autonomousMode.equals("score")) {
             driveForward(32);
             intake.set(1);   
-            timer.delay(.5);
+            Timer.delay(.5);
             intake.set(0);
             driveBack(0); 
         } else if (autonomousMode.equals("grab")) {
@@ -137,7 +133,7 @@ public class Robot extends TimedRobot {
             driveForward(grabBallsDistance);
             intake.set(0);
             intakeUp();
-            timer.delay(10);
+            Timer.delay(10);
         } else if (autonomousMode.equals("grab and score")){
             driveForward(86.63);
             intakeDown();
@@ -151,10 +147,10 @@ public class Robot extends TimedRobot {
             turnRight(344.661);
             driveForward(367.461);
             intake.set(-.5);
-            timer.delay(.5);
+            Timer.delay(.5);
             intake.set(0);
         }
-        */
+        
         updateTelemetry();
     }
 
