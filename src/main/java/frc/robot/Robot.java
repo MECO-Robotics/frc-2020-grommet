@@ -129,8 +129,6 @@ public class Robot extends TimedRobot {
                 Timer.delay(.5);
                 System.out.println("timer delay");
                 intake.set(0);
-                System.out.println("intake set");
-                // driveBack(0);
                 cycleEnded = true;
             } else if (autonomousMode.equals("grab")) {
                 double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
