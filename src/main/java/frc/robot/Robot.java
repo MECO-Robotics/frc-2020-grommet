@@ -118,7 +118,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousPeriodic() {
-        if (!cycleEnded) 
+        if (!cycleEnded) {
             if (autonomousMode.equals("score")) {
                 driveForward(32);
                 intake.set(1);
