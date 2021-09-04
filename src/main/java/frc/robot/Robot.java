@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         if (!cycleEnded) 
             if (autonomousMode.equals("score")) {
-                driveForward(32)
+                driveForward(32);
                 intake.set(1);
                 System.out.println("intake set");
                 Timer.delay(.5);
