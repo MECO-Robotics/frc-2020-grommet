@@ -129,6 +129,22 @@ public class Robot extends TimedRobot {
                 System.out.println("intake set");
                 // driveBack(0);
                 cycleEnded = true;
+                if (autonomousMode.equals("Demo Code")) {
+                    Timer.delay(.5);
+                    turnLeft(60);
+                    intake.set(1);
+                    System.out.println("intake set");
+                    intake.set(0);
+                    System.out.println("intake set");
+                    // driveBack(0);
+                    cycleEnded = true;
+
+                    //Demo code for out reach or events
+                    //1-spin circle
+                    //2-spit out balls while spinning
+
+
+                }
             } else if (autonomousMode.equals("grab")) {
                 double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
                 intakeDown();
