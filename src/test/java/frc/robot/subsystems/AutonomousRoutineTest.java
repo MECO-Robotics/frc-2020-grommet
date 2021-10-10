@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import edu.wpi.first.wpilibj.Timer;
@@ -10,6 +11,7 @@ import frc.robot.IDriveSubsystem;
 public class AutonomousRoutineTest {
     
     @Test
+    @Ignore
     public void testRecord() {
 
         AutonomousRoutine routine = new AutonomousRoutine("bob");
@@ -70,6 +72,7 @@ public class AutonomousRoutineTest {
     }
 
     @Test
+    @Ignore
     public void testRunPeriodic() {
 
         IDriveSubsystem stubDriveSubsystem = new StubDriveSubsystem();

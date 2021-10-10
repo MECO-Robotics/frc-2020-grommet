@@ -84,9 +84,8 @@ public class Robot extends TimedRobot {
         topLimitSwitch = new DigitalInput(4);
 
         autoSelector = new SendableChooser<>();
-        autoSelector.addOption("Grab Balls", "grab");
-        autoSelector.addOption("Score Balls", "score");
-        autoSelector.addOption("grab and score", "grab and score");
+        autoSelector.addOption("Spin shoot demo", "spin");
+        autoSelector.addOption("Drive 30in and eject", "score");
         SmartDashboard.putData("Auto Selector", autoSelector);
         SmartDashboard.putNumber("Grab Balls Distance", 42);
 
@@ -120,73 +119,69 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         if (!cycleEnded) {
             if (autonomousMode.equals("score")) {
-                driveForward(32);
+                //
+                // Infinite recharge 2019 autonomous routine
+                //
+                // Drive straight from the starting line to the lower
+                // power port and eject balls
+                //
+                driveForward(32); // not actual distance, but close
                 intake.set(1);
                 System.out.println("intake set");
                 Timer.delay(.5);
                 System.out.println("timer delay");
                 intake.set(0);
                 System.out.println("intake set");
-                // driveBack(0);
                 cycleEnded = true;
-                if (autonomousMode.equals("Demo Code")) {
-                    Timer.delay(.5);
-                    turnLeft(60);
-                    intake.set(1);
-                    System.out.println("intake set");
-                    intake.set(0);
-                    System.out.println("intake set");
-                    // driveBack(0);
-                    cycleEnded = true;
+            } else if (autonomousMode.equals("spin")) {
+                //
+                // Demo routine for outreach
+                //
+                // Eject balls while spinning 360 degreees
+                //
 
-                    //Demo code for out reach or events
-                    //1-spin circle
-                    //2-spit out balls while spinning
-
+                // 1. Turn on the intake motor to eject balls
+                // 2. Spin 360 degrees
+                // 3. Turn off the intake motor
+                intake.set(.5);
+                turnRight(60);
+                intake.set(0);
+                cycleEnded = true;
+            } else if (autonomousMode.equals("celebrate")) {
+                turnRight(60);
+                for (int i = 0; i < 4; i++) {
+                    driveForward(10);
+                    driveForward(-20);
+                    driveForward(10);
+                    turnRight(15);
+                    driveForward(10);
+                    driveForward(-20);
+                    driveForward(10);
+                    turnRight(42);
 
                 }
-            } else if (autonomousMode.equals("grab")) {
-                double grabBallsDistance = SmartDashboard.getNumber("Grab Balls Distance", 0);
-                intakeDown();
-                intake.set(-1);
-                driveForward(grabBallsDistance);
-                intake.set(0);
-                intakeUp();
-                Timer.delay(10);
-                cycleEnded = true;
-            } else if (autonomousMode.equals("grab and score")) {
-                driveForward(86.63);
-                intakeDown();
-                intake.set(.5);
-                driveForward(159.63);
-                intake.set(0);
-                turnRight(218.941);
-                driveForward(316.911);
-                turnLeft(257.63);
-                driveForward(285.38);
-                turnRight(344.661);
-                driveForward(367.461);
-                intake.set(-.5);
-                Timer.delay(.5);
-                intake.set(0);
-                cycleEnded = true;
+                
+           
+           
+           
+           
             }
+                
+                driveSubsystem.tankDrive(1, -1);
+
 
             updateTelemetry();
         }
     }
 
-    /**
-     * This function is called once each time the robot enters teleoperated mode.
-     */
     @Override
-    public void teleopInit() {
-        selectedCodeVersion = codeSelector.getSelected();
-        armLift.set(0);
-        intake.set(0);
+    public void simulationInit() {
 
-        driveSubsystem.resetEncoders();
-        autoRoutineA.startRecording();
+    }
+
+    @Override
+    public void simulationPeriodic() {
+
     }
 
     /**
@@ -208,6 +203,19 @@ public class Robot extends TimedRobot {
         // driveSubsystem.leftEncoder.getDistance());
         // System.out.println("Right encoder: " +
         // driveSubsystem.rightEncoder.getDistance());
+    }
+
+    /**
+     * This function is called once each time the robot enters teleoperated mode.
+     */
+    @Override
+    public void teleopInit() {
+        selectedCodeVersion = codeSelector.getSelected();
+        armLift.set(0);
+        intake.set(0);
+
+        driveSubsystem.resetEncoders();
+        autoRoutineA.startRecording();
     }
 
     /**
