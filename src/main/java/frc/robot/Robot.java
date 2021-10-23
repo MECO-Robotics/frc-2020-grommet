@@ -161,14 +161,15 @@ public class Robot extends TimedRobot {
 
                 }
                 
-           
-           
-           
-           
-            }
-                
-                driveSubsystem.tankDrive(1, -1);
+                turnRight(60);
 
+                cycleEnded = true;
+
+
+
+            }
+
+            
 
             updateTelemetry();
         }
@@ -424,5 +425,16 @@ public class Robot extends TimedRobot {
         }
         driveSubsystem.tankDrive(0, 0);
     }
+
+    //private void circleLeft(double d, double distance) {
+        //double I = d / (d + 38);
+        //double o = 1;
+       // double inc = 3.14*d;
+        //driveSubsystem.tankDrive(1, I);
+        ///1 or o is the left wheel
+        ///I is the right wheel 
+       // while (driveSubsystem.tankdrive.getRightDistance() < far)
+    //}
+
 
 }
