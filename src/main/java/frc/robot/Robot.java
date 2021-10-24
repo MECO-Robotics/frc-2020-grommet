@@ -173,6 +173,8 @@ public class Robot extends TimedRobot {
             } else if (autonomousMode.equals("test")) {
                 driveForwardtest(30); 
                 driveBacktest(30);
+                turnRight(30);
+                turnLeft(30);
 
                 cycleEnded = true;
 
