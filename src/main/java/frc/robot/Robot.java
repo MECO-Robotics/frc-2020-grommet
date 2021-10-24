@@ -86,6 +86,8 @@ public class Robot extends TimedRobot {
         autoSelector = new SendableChooser<>();
         autoSelector.addOption("Spin shoot demo", "spin");
         autoSelector.addOption("Drive 30in and eject", "score");
+        autoSelector.addOption("Celebration", "celebrate");
+        autoSelector.addOption("Test sequence", "test");
         SmartDashboard.putData("Auto Selector", autoSelector);
         SmartDashboard.putNumber("Grab Balls Distance", 42);
 
@@ -94,6 +96,7 @@ public class Robot extends TimedRobot {
         codeSelector.setDefaultOption("Default", "default");
         codeSelector.addOption("Alternate", "alt");
         SmartDashboard.putData("Code Selector", codeSelector);
+
     }
 
     /**
@@ -148,28 +151,32 @@ public class Robot extends TimedRobot {
                 intake.set(0);
                 cycleEnded = true;
             } else if (autonomousMode.equals("celebrate")) {
-                turnRight(60);
+                driveForward(30);
+                // turnRight(120);
+
                 for (int i = 0; i < 4; i++) {
                     driveForward(10);
-                    driveForward(-20);
+                    driveBack(20);
                     driveForward(10);
                     turnRight(15);
                     driveForward(10);
-                    driveForward(-20);
+                    driveBack(20);
                     driveForward(10);
                     turnRight(42);
 
                 }
-                
+
                 turnRight(60);
 
                 cycleEnded = true;
 
+            } else if (autonomousMode.equals("test")) {
+                driveForwardtest(30); 
+                driveBacktest(30);
 
+                cycleEnded = true;
 
             }
-
-            
 
             updateTelemetry();
         }
@@ -426,15 +433,29 @@ public class Robot extends TimedRobot {
         driveSubsystem.tankDrive(0, 0);
     }
 
-    //private void circleLeft(double d, double distance) {
-        //double I = d / (d + 38);
-        //double o = 1;
-       // double inc = 3.14*d;
-        //driveSubsystem.tankDrive(1, I);
-        ///1 or o is the left wheel
-        ///I is the right wheel 
-       // while (driveSubsystem.tankdrive.getRightDistance() < far)
-    //}
+    // private void circleLeft(double d, double distance) {
+    // double I = d / (d + 38);
+    // double o = 1;
+    // double inc = 3.14*d;
+    // driveSubsystem.tankDrive(1, I);
+    /// 1 or o is the left wheel
+    /// I is the right wheel
+    // while (driveSubsystem.tankdrive.getRightDistance() < far)
+    // }
 
+    private void driveForwardtest(double far) {
+        double oldDistance = driveSubsystem.getLeftDistance();
+        while (driveSubsystem.getLeftDistance() < (far + oldDistance)) {
+            driveSubsystem.tankDrive(-.25, -.25);
+        }
+    }
 
+    private void driveBacktest(double far) {
+                double oldDistance = driveSubsystem.getLeftDistance();
+                while (driveSubsystem.getLeftDistance() < (far + oldDistance)) {
+                    driveSubsystem.tankDrive(-.25, -.25);
+                }
+    }
+
+// driveSubsystem.tankDrive(0,0)
 }
