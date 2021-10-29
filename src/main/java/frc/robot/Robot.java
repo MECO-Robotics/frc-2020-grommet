@@ -171,8 +171,8 @@ public class Robot extends TimedRobot {
                 cycleEnded = true;
 
             } else if (autonomousMode.equals("test")) {
-                driveForwardtest(30); 
-                driveBacktest(30);
+                driveForwardSlow(30); 
+                driveBackSlow(30);
                 turnRight(30);
                 turnLeft(30);
 
@@ -445,18 +445,20 @@ public class Robot extends TimedRobot {
     // while (driveSubsystem.tankdrive.getRightDistance() < far)
     // }
 
-    private void driveForwardtest(double far) {
-        double oldDistance = driveSubsystem.getLeftDistance();
-        while (driveSubsystem.getLeftDistance() < (far + oldDistance)) {
-            driveSubsystem.tankDrive(-.25, -.25);
+    private void driveForwardSlow(double far) {
+        double destination = driveSubsystem.getLeftDistance() + far;
+        while (driveSubsystem.getLeftDistance() < destination) {
+            driveSubsystem.tankDrive(-0.25, -0.25);
         }
+        driveSubsystem.tankDrive(0, 0);
     }
 
-    private void driveBacktest(double far) {
-                double oldDistance = driveSubsystem.getLeftDistance();
-                while (driveSubsystem.getLeftDistance() < (far + oldDistance)) {
-                    driveSubsystem.tankDrive(-.25, -.25);
-                }
+    private void driveBackSlow(double far) {
+        double destination = driveSubsystem.getLeftDistance() - far;
+        while (driveSubsystem.getLeftDistance() > destination) {
+            driveSubsystem.tankDrive(0.25, 0.25);
+        }
+        driveSubsystem.tankDrive(0, 0);
     }
 
 // driveSubsystem.tankDrive(0,0)
