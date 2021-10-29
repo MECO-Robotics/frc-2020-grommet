@@ -88,6 +88,7 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("Drive 30in and eject", "score");
         autoSelector.addOption("Celebration", "celebrate");
         autoSelector.addOption("Test sequence", "test");
+        autoSelector.addOption("my name jeff", "jeff");
         SmartDashboard.putData("Auto Selector", autoSelector);
         SmartDashboard.putNumber("Grab Balls Distance", 42);
 
@@ -127,7 +128,7 @@ public class Robot extends TimedRobot {
                 //
                 // Drive straight from the starting line to the lower
                 // power port and eject balls
-                //
+                driveSubsystem.resetEncoders();
                 driveForward(32); // not actual distance, but close
                 intake.set(1);
                 System.out.println("intake set");
@@ -153,6 +154,7 @@ public class Robot extends TimedRobot {
             } else if (autonomousMode.equals("celebrate")) {
                 driveForward(30);
                 // turnRight(120);
+                
 
                 for (int i = 0; i < 4; i++) {
                     driveForward(10);
@@ -180,7 +182,13 @@ public class Robot extends TimedRobot {
                 cycleEnded = true;
 
             }
+            else if (autonomousMode.equals("jeff")) {
+                driveSubsystem.resetEncoders();
+                System.out.println("Hi my name jeff");
+                turnRight(400);
+                driveForward(15);
 
+            }
             updateTelemetry();
         }
     }
