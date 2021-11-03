@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
     //
     // Autonomous
     //
-
+    private Timer armTimer = new Timer();
     SendableChooser<String> autoSelector; // List of autonomous modes
     String autonomousMode; // Current mode selected at drivers station
     double rightAngle = 59.28185337;
@@ -88,7 +88,7 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("Drive 30in and eject", "score");
         autoSelector.addOption("Celebration", "celebrate");
         autoSelector.addOption("Test sequence", "test");
-        autoSelector.addOption("my name jeff", "jeff");
+        autoSelector.addOption("test time motion", "test time motion");
         SmartDashboard.putData("Auto Selector", autoSelector);
         SmartDashboard.putNumber("Grab Balls Distance", 42);
 
@@ -111,7 +111,7 @@ public class Robot extends TimedRobot {
         timer.reset();
         timer.start();
         driveSubsystem.resetEncoders();
-
+        cycleEnded = false;
         autoRoutineA.startAutonomous();
     }
 
@@ -154,7 +154,6 @@ public class Robot extends TimedRobot {
             } else if (autonomousMode.equals("celebrate")) {
                 driveForward(30);
                 // turnRight(120);
-                
 
                 for (int i = 0; i < 4; i++) {
                     driveForward(10);
@@ -166,35 +165,64 @@ public class Robot extends TimedRobot {
                     driveForward(10);
                     turnRight(42);
 
-                }
+        /
 
                 turnRight(60);
 
                 cycleEnded = true;
 
             } else if (autonomousMode.equals("test")) {
-<<<<<<< HEAD
-                driveBacktest(30);
-                driveForwardtest(30); 
-                //driveSubsystem.resetEncoders();
-                 turnRight(30);
-=======
-                driveForwardSlow(30); 
+
+                // driveBacktest(30);
+                // driveForwardtest(30);
+                // driveSubsystem.resetEncoders();
+                turnRight(30);
+
+                driveForwardSlow(30);
                 driveBackSlow(30);
                 turnRight(30);
->>>>>>> 76cf6e476ca9c0dbf51b0066b346f6b36a1624ff
+
                 turnLeft(30);
 
                 cycleEnded = true;
 
-            }
-            else if (autonomousMode.equals("jeff")) {
-                driveSubsystem.resetEncoders();
-                System.out.println("Hi my name jeff");
-                turnRight(400);
-                driveForward(15);
+            } else if (autonomousMode.equals("test time motion")) {
+                // remember that in tank drive negative values mean the robot moves forward and
+                // positive values mean that the robot move backwards.
+                double speed;
 
+
+                for (int x = 0; x < 3; x++) {
+                    speed = 0;
+
+                    // accelerate forwards from 0 to -0.5 over 1 second
+                    for (int i = 0; i < 4; i++) {
+                        driveSubsystem.tankDrive(speed, speed);
+                        Timer.delay(.1);
+                        speed = speed - .2;
+                    }
+
+                    // accelerate backwards from 0 to 0.5 over 1 second
+                    speed = 0;
+                    for (int i = 0; i < 4; i++) {
+                        driveSubsystem.tankDrive(speed, speed);
+                        Timer.delay(.1);
+                        speed = speed + .2;
+                    }
+
+                    // Spin slowly for 2 seconds
+                    driveSubsystem.tankDrive(-.2, .2);
+                    Timer.delay(2);
+                    driveSubsystem.tankDrive(0, 0);
+                }
+
+                driveSubsystem.tankDrive(-.3, .3);
+                Timer.delay(5);
+                driveSubsystem.tankDrive(0, 0);
+                // lines 207-209 = robot turning
+                cycleEnded = true;
             }
+
             updateTelemetry();
         }
     }
@@ -476,5 +504,5 @@ public class Robot extends TimedRobot {
         driveSubsystem.tankDrive(0, 0);
     }
 
-// driveSubsystem.tankDrive(0,0)
+    // driveSubsystem.tankDrive(0,0)
 }
