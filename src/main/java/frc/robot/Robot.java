@@ -88,9 +88,11 @@ public class Robot extends TimedRobot {
         autoSelector.addOption("Drive 30in and eject", "score");
         autoSelector.addOption("Celebration", "celebrate");
         autoSelector.addOption("Test sequence", "test");
+        autoSelector.addOption("Nate", "Nate");
         autoSelector.addOption("test time motion", "test time motion");
         SmartDashboard.putData("Auto Selector", autoSelector);
         SmartDashboard.putNumber("Grab Balls Distance", 42);
+        SmartDashboard.putString("important message", "make sure that the arm is up for Nate auto");
 
         SmartDashboard.putBoolean("Alternate Code", false);
         codeSelector = new SendableChooser<>();
@@ -165,7 +167,7 @@ public class Robot extends TimedRobot {
                     driveForward(10);
                     turnRight(42);
 
-        /
+                }
 
                 turnRight(60);
 
@@ -190,7 +192,6 @@ public class Robot extends TimedRobot {
                 // remember that in tank drive negative values mean the robot moves forward and
                 // positive values mean that the robot move backwards.
                 double speed;
-
 
                 for (int x = 0; x < 3; x++) {
                     speed = 0;
@@ -219,8 +220,30 @@ public class Robot extends TimedRobot {
                 driveSubsystem.tankDrive(-.3, .3);
                 Timer.delay(5);
                 driveSubsystem.tankDrive(0, 0);
-                // lines 207-209 = robot turning
+                // lines 207-209 = robot turning 
                 cycleEnded = true;
+            } else if (autonomousMode.equals("Nate")) {
+                intakeDown();
+                intakeUp();
+                driveSubsystem.tankDrive(-2, -2);
+                Timer.delay(5);
+                driveSubsystem.tankDrive(-2, 2);
+                Timer.delay(2.5);
+                driveSubsystem.tankDrive(-2, -2);
+                Timer.delay(5);
+                driveSubsystem.tankDrive(-2, 2);
+                Timer.delay(2.5);
+                driveSubsystem.tankDrive(-2, -2);
+                Timer.delay(5);
+                driveSubsystem.tankDrive(-2, 2);
+                Timer.delay(2.5);
+                driveSubsystem.tankDrive(-2, -2);
+                Timer.delay(5);
+                driveSubsystem.tankDrive(-2, 2);
+                Timer.delay(10);
+                //should go in a square
+                cycleEnded = true;
+
             }
 
             updateTelemetry();
